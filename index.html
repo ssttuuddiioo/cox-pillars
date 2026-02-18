@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+  <title>Cox Conserves - Tree Pledge</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Logo -->
+  <div id="logo-container">
+    <svg id="cox-logo" viewBox="0 0 48 64" xmlns="http://www.w3.org/2000/svg">
+      <!-- Cox Conserves stylized pine/arrow tree -->
+      <!-- Top tier -->
+      <polygon points="24,2 18,14 22,14 14,26 20,26 10,40 38,40 28,26 34,26 26,14 30,14" fill="white"/>
+      <!-- Trunk with upward lines -->
+      <line x1="24" y1="40" x2="24" y2="58" stroke="white" stroke-width="2.5"/>
+      <line x1="18" y1="52" x2="24" y2="44" stroke="white" stroke-width="1.8"/>
+      <line x1="30" y1="52" x2="24" y2="44" stroke="white" stroke-width="1.8"/>
+    </svg>
+  </div>
+
+  <!-- Main tree canvas -->
+  <canvas id="tree-canvas"></canvas>
+
+  <!-- CTA text -->
+  <div id="cta-text">
+    <p>Touch the tree to take the pledge.</p>
+  </div>
+
+  <!-- Thank you overlay -->
+  <div id="thank-you" class="hidden">
+    <p id="thank-you-text"></p>
+  </div>
+
+  <!-- Pledge form modal -->
+  <div id="pledge-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <h2>Choose your pillar</h2>
+      <div id="pillar-options"></div>
+      <div class="form-fields">
+        <div class="input-wrapper">
+          <input type="text" id="pledge-name" placeholder="Name" maxlength="40" readonly>
+        </div>
+        <div class="input-wrapper">
+          <input type="text" id="pledge-message" placeholder="Your pledge (optional)" maxlength="100" readonly>
+        </div>
+      </div>
+      <button id="pledge-submit" disabled>Submit</button>
+      <div id="keyboard-container"></div>
+    </div>
+  </div>
+
+  <!-- Leaf tooltip -->
+  <div id="leaf-tooltip" class="hidden">
+    <p class="tooltip-name"></p>
+    <p class="tooltip-pillar"><span class="tooltip-pillar-dot"></span><span class="tooltip-pillar-text"></span></p>
+    <p class="tooltip-message"></p>
+  </div>
+
+  <!-- Controls -->
+  <div id="controls">
+    <button id="btn-chart" aria-label="Chart view">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.2" fill="none" opacity="0.7"/>
+        <path d="M9 1.5 A7.5 7.5 0 0 1 16.5 9 L9 9 Z" fill="white" opacity="0.5"/>
+        <path d="M9 1.5 A7.5 7.5 0 0 0 2.2 13 L9 9 Z" fill="white" opacity="0.3"/>
+      </svg>
+    </button>
+    <button id="btn-1x">+1</button>
+    <button id="btn-10x">+100</button>
+  </div>
+
+  <!-- Scripts (order matters, all defer) -->
+  <script src="js/utils.js" defer></script>
+  <script src="js/tree.js" defer></script>
+  <script src="js/pledges.js" defer></script>
+  <script src="js/renderer.js" defer></script>
+  <script src="js/animations.js" defer></script>
+  <script src="js/keyboard.js" defer></script>
+  <script src="js/form.js" defer></script>
+  <script src="js/tooltip.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
