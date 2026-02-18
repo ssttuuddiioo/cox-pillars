@@ -124,13 +124,14 @@ var Animations = (function() {
     this.scale = 0;
     this.onComplete = null;
     this.rotation = (Math.random() - 0.5) * 1.2;
+    this.elastic = false;
   }
 
   LeafGrowAnim.prototype.update = function(timestamp) {
     if (this.startTime === null) this.startTime = timestamp;
     var elapsed = timestamp - this.startTime;
     var t = Math.min(elapsed / this.duration, 1);
-    this.scale = easeOutBack(t);
+    this.scale = this.elastic ? easeOutElastic(t) : easeOutBack(t);
   };
 
   LeafGrowAnim.prototype.draw = function(time) {
@@ -173,7 +174,7 @@ var Animations = (function() {
   // ── Animate only the stroke (yellow) to a slot, call onDone when complete ──
   function animateStrokeToSlot(slot, onDone) {
     slot.reserved = true;
-    var strokeAnim = new BranchStrokeAnim(slot.branchPath, '#FFD54F', 1000);
+    var strokeAnim = new BranchStrokeAnim(slot.branchPath, '#FFD54F', 1500);
     strokeAnim.onComplete = function() {
       if (onDone) onDone();
     };
@@ -183,8 +184,9 @@ var Animations = (function() {
   // ── Animate only the leaf grow at a slot (no stroke) ──
   function animateLeafGrow(pledge, slot) {
     var rotation = (Math.random() - 0.5) * 1.2;
-    var growAnim = new LeafGrowAnim(slot, pledge, 500);
+    var growAnim = new LeafGrowAnim(slot, pledge, 900);
     growAnim.rotation = rotation;
+    growAnim.elastic = true;
 
     growAnim.onComplete = function() {
       slot.occupied = true;

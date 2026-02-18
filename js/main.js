@@ -38,8 +38,11 @@
         // Slot was already reserved by the stroke animation
         slot = pendingSlot;
         pendingSlot = null;
-        // Only grow the leaf (stroke already played)
-        Animations.animateLeafGrow(pledge, slot);
+        // Grow the leaf after modal fades out
+        setTimeout(function() {
+          Animations.animateLeafGrow(pledge, slot);
+          showThankYou('Thank you, ' + pledge.name + '!');
+        }, 400);
       } else {
         slot = TreeGenerator.findAvailableSlot(treeData);
         if (!slot) {
@@ -48,11 +51,11 @@
         }
         // Full stroke + leaf animation
         Animations.animatePledge(pledge, slot);
+        showThankYou('Thank you, ' + pledge.name + '!');
       }
       totalPlaced++;
       checkBranchGrowth();
       updateCounter();
-      showThankYou('Thank you, ' + pledge.name + '!');
     }, function() {
       // Called when modal dismissed without submit — unreserve slot
       if (pendingSlot) {
