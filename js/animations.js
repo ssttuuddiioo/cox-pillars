@@ -184,7 +184,7 @@ var Animations = (function() {
   // ── Animate only the leaf grow at a slot (no stroke) ──
   function animateLeafGrow(pledge, slot) {
     var rotation = (Math.random() - 0.5) * 1.2;
-    var growAnim = new LeafGrowAnim(slot, pledge, 900);
+    var growAnim = new LeafGrowAnim(slot, pledge, 2700);
     growAnim.rotation = rotation;
     growAnim.elastic = true;
 
