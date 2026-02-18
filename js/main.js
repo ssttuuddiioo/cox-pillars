@@ -275,69 +275,74 @@
 
     if (totalOccupied === 0) return;
 
-    // Adaptive spacing based on count
-    var leafSpacing, ringGap;
-    if (totalOccupied > 5000) {
-      leafSpacing = 6; ringGap = 8;
-    } else if (totalOccupied > 2000) {
-      leafSpacing = 8; ringGap = 10;
-    } else if (totalOccupied > 500) {
-      leafSpacing = 12; ringGap = 14;
-    } else if (totalOccupied > 200) {
-      leafSpacing = 18; ringGap = 20;
-    } else {
-      leafSpacing = 22; ringGap = 24;
-    }
-
     // Filter to active groups
     var activeGroups = [];
     for (var g = 0; g < groups.length; g++) {
       if (groups[g].slots.length > 0) activeGroups.push(groups[g]);
     }
 
-    var GAP_ANGLE = 0.08;
-    var totalGap = GAP_ANGLE * activeGroups.length;
-    var availableAngle = Math.PI * 2 - totalGap;
+    // Cluster centers spread around the canvas organically
+    var clusterCenters = [
+      { x: 300, y: 350 },
+      { x: 700, y: 350 },
+      { x: 300, y: 650 },
+      { x: 700, y: 650 }
+    ];
+
+    // Adaptive leaf spacing based on count
+    var spacing;
+    if (totalOccupied > 5000) {
+      spacing = 7;
+    } else if (totalOccupied > 2000) {
+      spacing = 9;
+    } else if (totalOccupied > 500) {
+      spacing = 13;
+    } else if (totalOccupied > 100) {
+      spacing = 18;
+    } else {
+      spacing = 24;
+    }
+
+    // Use seeded random for stable layout
+    var chartRng = new SeededRandom(7);
 
     treeData.chartLabels = [];
-    var startAngle = -Math.PI / 2;
 
     for (var gi = 0; gi < activeGroups.length; gi++) {
       var group = activeGroups[gi];
-      var sectorAngle = (group.slots.length / totalOccupied) * availableAngle;
-      var sectorMid = startAngle + sectorAngle / 2;
+      var cx = clusterCenters[gi % clusterCenters.length].x;
+      var cy = clusterCenters[gi % clusterCenters.length].y;
 
-      // Pack leaves in concentric arcs within sector
+      // Place leaves in an organic spiral with jitter
       var leafIdx = 0;
-      var ringRadius = 30;
-      var maxRingRadius = 30;
+      var angle = chartRng.next() * Math.PI * 2;
+      var radius = 0;
+      var maxR = 0;
 
       while (leafIdx < group.slots.length) {
-        var arcLen = ringRadius * sectorAngle;
-        var leavesInRing = Math.max(1, Math.floor(arcLen / leafSpacing));
-        leavesInRing = Math.min(leavesInRing, group.slots.length - leafIdx);
+        var jitterR = chartRng.range(-spacing * 0.3, spacing * 0.3);
+        var jitterA = chartRng.range(-0.3, 0.3);
+        var lx = cx + Math.cos(angle + jitterA) * (radius + jitterR);
+        var ly = cy + Math.sin(angle + jitterA) * (radius + jitterR);
 
-        for (var li = 0; li < leavesInRing; li++) {
-          var t = leavesInRing === 1 ? 0.5 : li / (leavesInRing - 1);
-          var angle = startAngle + sectorAngle * (0.1 + t * 0.8);
-          var cSlot = group.slots[leafIdx];
-          cSlot.chartX = centerX + Math.cos(angle) * ringRadius;
-          cSlot.chartY = centerY + Math.sin(angle) * ringRadius;
-          leafIdx++;
-        }
+        group.slots[leafIdx].chartX = lx;
+        group.slots[leafIdx].chartY = ly;
 
-        maxRingRadius = ringRadius;
-        ringRadius += ringGap;
+        if (radius + jitterR > maxR) maxR = radius + jitterR;
+        leafIdx++;
+
+        // Advance along a loose spiral
+        angle += spacing / Math.max(radius, spacing) * 1.2;
+        radius += spacing / (Math.PI * 2) * (spacing / Math.max(radius, spacing)) * 3;
       }
 
       treeData.chartLabels.push({
         pillar: group.pillar,
-        angle: sectorMid,
-        radius: maxRingRadius + 40,
+        cx: cx,
+        cy: cy,
+        radius: Math.max(maxR, 30),
         count: group.slots.length
       });
-
-      startAngle += sectorAngle + GAP_ANGLE;
     }
   }
 

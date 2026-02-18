@@ -288,55 +288,25 @@ var Renderer = (function() {
     ctx.restore();
   }
 
-  // ── Draw chart legend ──
+  // ── Draw chart labels near each cluster ──
   function drawChartLabels(labels, chartAlpha) {
     if (!labels || labels.length === 0 || chartAlpha <= 0.01) return;
 
     ctx.save();
-    ctx.globalAlpha = chartAlpha;
 
     var fontSize = Math.max(10, 12 * scale);
     ctx.font = '500 ' + fontSize + 'px Gotham, Helvetica Neue, Arial, sans-serif';
 
-    // Measure total width for centering
-    var items = [];
-    var totalWidth = 0;
-    var dotSize = 5;
-    var dotGap = 8;
-    var itemGap = 24;
-
     for (var i = 0; i < labels.length; i++) {
-      var text = labels[i].pillar.name + ' (' + labels[i].count + ')';
-      var tw = ctx.measureText(text).width;
-      items.push({ text: text, width: tw, color: labels[i].pillar.color });
-      totalWidth += dotSize * 2 + dotGap + tw;
-    }
-    totalWidth += itemGap * (items.length - 1);
+      var label = labels[i];
+      var text = label.pillar.name + ' (' + label.count + ')';
+      var pos = toScreen(label.cx, label.cy - label.radius - 25);
 
-    // Position between chart bottom and buttons
-    var maxR = 0;
-    for (var k = 0; k < labels.length; k++) {
-      if (labels[k].radius > maxR) maxR = labels[k].radius;
-    }
-    var chartBottom = toScreen(500, 500 + maxR).y;
-    var buttonsTop = displayH - 90;
-    var y = chartBottom + (buttonsTop - chartBottom) / 2;
-
-    var x = (displayW - totalWidth) / 2;
-
-    for (var j = 0; j < items.length; j++) {
-      ctx.globalAlpha = chartAlpha;
-      ctx.beginPath();
-      ctx.arc(x + dotSize, y, dotSize, 0, Math.PI * 2);
-      ctx.fillStyle = items[j].color;
-      ctx.fill();
-
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-      ctx.textAlign = 'left';
+      ctx.globalAlpha = chartAlpha * 0.85;
+      ctx.fillStyle = label.pillar.color;
+      ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(items[j].text, x + dotSize * 2 + dotGap, y);
-
-      x += dotSize * 2 + dotGap + items[j].width + itemGap;
+      ctx.fillText(text, pos.x, pos.y);
     }
 
     ctx.restore();
