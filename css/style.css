@@ -423,11 +423,15 @@ html, body {
 /* ── Controls ── */
 #controls {
   position: absolute;
-  bottom: 24px;
-  right: 24px;
+  bottom: 64px;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
   z-index: 10;
   display: -webkit-flex;
   display: flex;
+  -webkit-align-items: center;
+  align-items: center;
   gap: 10px;
 }
 
@@ -460,6 +464,7 @@ html, body {
   cursor: default;
 }
 
+#btn-wind,
 #btn-chart {
   width: 40px;
   height: 40px;
@@ -480,11 +485,13 @@ html, body {
   user-select: none;
 }
 
+#btn-wind:hover,
 #btn-chart:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.4);
 }
 
+#btn-wind.active,
 #btn-chart.active {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.5);

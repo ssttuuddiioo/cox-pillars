@@ -10,10 +10,10 @@ var TreeGenerator = (function() {
     var allBranches = [];
     var leafSlots = [];
 
-    var MAX_DEPTH = 4;
+    var MAX_DEPTH = 6;
     var TRUNK_X = NORMALIZED_W / 2;
     var TRUNK_Y = NORMALIZED_H * 0.87;
-    var TRUNK_LEN = NORMALIZED_H * 0.22;
+    var TRUNK_LEN = NORMALIZED_H * 0.154;
     var TRUNK_ANGLE = Math.PI / 2;
 
     var root = buildBranch(
@@ -50,7 +50,7 @@ var TreeGenerator = (function() {
       end: { x: ex, y: ey },
       cp: { x: midX, y: midY },
       depth: depth,
-      thickness: mapRange(depth, 0, maxDepth, 8, 1.5),
+      thickness: mapRange(depth, 0, maxDepth, 8, 0.8),
       angle: angle,
       length: length,
       children: [],
@@ -62,9 +62,7 @@ var TreeGenerator = (function() {
 
     // ── Leaf slots distributed along branches ──
     if (depth >= 1) {
-      var numLeaves;
-      if (depth <= 2) numLeaves = 3;
-      else numLeaves = 4;
+      var numLeaves = 5 + depth * 5;
 
       for (var li = 0; li < numLeaves; li++) {
         var leafT;
@@ -77,7 +75,7 @@ var TreeGenerator = (function() {
         leafT = Math.max(0.15, Math.min(0.95, leafT));
         var lx = quadBezierAt(sx, midX, ex, leafT);
         var ly = quadBezierAt(sy, midY, ey, leafT);
-        var offsetDist = rng.range(3, 11);
+        var offsetDist = rng.range(3, 8 + depth * 4);
         var side = rng.next() < 0.5 ? 1 : -1;
         var offAngle = angle + side * Math.PI / 2;
         lx += Math.cos(offAngle) * offsetDist;

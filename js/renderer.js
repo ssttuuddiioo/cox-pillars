@@ -5,6 +5,7 @@ var Renderer = (function() {
   var canvas, ctx;
   var displayW, displayH;
   var scale, offsetX, offsetY;
+  var windStrength = 0;
 
   function init(canvasEl) {
     canvas = canvasEl;
@@ -94,15 +95,29 @@ var Renderer = (function() {
     }
   }
 
+  function setWindStrength(w) { windStrength = w; }
+
+  // ── Wind offset (gusts + directional push) ──
+  function windOffset(depth, id, time, scale) {
+    if (windStrength <= 0) return { x: 0, y: 0 };
+    var gust = Math.sin(time * 0.4) * 0.4 + Math.sin(time * 0.7) * 0.3 + 0.3;
+    var w = depth * 2.5 * windStrength * gust * scale;
+    return {
+      x: Math.sin(time * 1.5 + id * 0.4) * w + w * 0.6,
+      y: Math.cos(time * 1.1 + id * 0.3) * w * 0.25
+    };
+  }
+
   // ── Apply subtle sway to branch endpoints ──
   function applySway(branch, time, maxDepth) {
     var amt = branch.depth * 0.4;
     var freq = 0.35 + (branch.id % 19) * 0.015;
     var ox = Math.sin(time * freq) * amt;
     var oy = Math.cos(time * freq * 0.7) * amt * 0.35;
+    var wo = windOffset(branch.depth, branch.id, time, 1);
     return {
-      x: branch.end.x + ox,
-      y: branch.end.y + oy
+      x: branch.end.x + ox + wo.x,
+      y: branch.end.y + oy + wo.y
     };
   }
 
@@ -112,9 +127,10 @@ var Renderer = (function() {
     var freq = 0.35 + (branch.id % 19) * 0.015;
     var ox = Math.sin(time * freq) * amt;
     var oy = Math.cos(time * freq * 0.7) * amt * 0.2;
+    var wo = windOffset(branch.depth, branch.id, time, 0.5);
     return {
-      x: branch.cp.x + ox,
-      y: branch.cp.y + oy
+      x: branch.cp.x + ox + wo.x,
+      y: branch.cp.y + oy + wo.y
     };
   }
 
@@ -129,10 +145,11 @@ var Renderer = (function() {
     var freq = 0.35 + (lastBranch.id % 19) * 0.015;
     var ox = Math.sin(time * freq) * amt;
     var oy = Math.cos(time * freq * 0.7) * amt * 0.35;
+    var wo = windOffset(lastBranch.depth, lastBranch.id + slot.id, time, branchT);
 
     return {
-      x: slot.x + ox,
-      y: slot.y + oy
+      x: slot.x + ox + wo.x,
+      y: slot.y + oy + wo.y
     };
   }
 
@@ -296,8 +313,16 @@ var Renderer = (function() {
     }
     totalWidth += itemGap * (items.length - 1);
 
+    // Position between chart bottom and buttons
+    var maxR = 0;
+    for (var k = 0; k < labels.length; k++) {
+      if (labels[k].radius > maxR) maxR = labels[k].radius;
+    }
+    var chartBottom = toScreen(500, 500 + maxR).y;
+    var buttonsTop = displayH - 90;
+    var y = chartBottom + (buttonsTop - chartBottom) / 2;
+
     var x = (displayW - totalWidth) / 2;
-    var y = 56;
 
     for (var j = 0; j < items.length; j++) {
       ctx.globalAlpha = chartAlpha;
@@ -327,6 +352,7 @@ var Renderer = (function() {
     drawLeaf: drawLeaf,
     drawStrokePath: drawStrokePath,
     drawChartLabels: drawChartLabels,
+    setWindStrength: setWindStrength,
     toScreen: toScreen,
     toNormalized: toNormalized,
     getSwayedSlotPos: getSwayedSlotPos,

@@ -8,7 +8,7 @@
   var thankYou = document.getElementById('thank-you');
   var thankYouText = document.getElementById('thank-you-text');
   var totalPlaced = 0;
-  var MAX_PLEDGES = 1000;
+  var MAX_PLEDGES = 5000;
   var pendingClickPos = null;
 
   // ── Initialize ──
@@ -21,6 +21,8 @@
     treeData.chartMode = false;
     treeData.chartTransition = 0;
     treeData.chartLabels = [];
+    treeData.windActive = false;
+    treeData.windStrength = 0;
 
     // Setup systems
     Animations.setTreeData(treeData);
@@ -147,6 +149,12 @@
     btnChart.addEventListener('click', function() {
       toggleChart();
     });
+
+    var btnWind = document.getElementById('btn-wind');
+    btnWind.addEventListener('click', function() {
+      treeData.windActive = !treeData.windActive;
+      btnWind.classList.toggle('active', treeData.windActive);
+    });
   }
 
   // Add a single pledge with full stroke + leaf grow animation
@@ -269,8 +277,12 @@
 
     // Adaptive spacing based on count
     var leafSpacing, ringGap;
-    if (totalOccupied > 500) {
-      leafSpacing = 14; ringGap = 16;
+    if (totalOccupied > 5000) {
+      leafSpacing = 6; ringGap = 8;
+    } else if (totalOccupied > 2000) {
+      leafSpacing = 8; ringGap = 10;
+    } else if (totalOccupied > 500) {
+      leafSpacing = 12; ringGap = 14;
     } else if (totalOccupied > 200) {
       leafSpacing = 18; ringGap = 20;
     } else {

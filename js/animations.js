@@ -32,6 +32,17 @@ var Animations = (function() {
       }
     }
 
+    // Animate wind strength
+    if (treeData) {
+      var wTarget = treeData.windActive ? 1 : 0;
+      if (treeData.windStrength < wTarget) {
+        treeData.windStrength = Math.min(wTarget, treeData.windStrength + 0.015);
+      } else if (treeData.windStrength > wTarget) {
+        treeData.windStrength = Math.max(wTarget, treeData.windStrength - 0.015);
+      }
+      Renderer.setWindStrength(treeData.windStrength);
+    }
+
     var chartT = treeData ? (treeData.chartTransition || 0) : 0;
     var treeAlpha = 1 - chartT;
 
