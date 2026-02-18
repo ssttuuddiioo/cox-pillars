@@ -170,12 +170,40 @@ var Animations = (function() {
     addAnimation(strokeAnim);
   }
 
+  // ── Animate only the stroke (yellow) to a slot, call onDone when complete ──
+  function animateStrokeToSlot(slot, onDone) {
+    slot.reserved = true;
+    var strokeAnim = new BranchStrokeAnim(slot.branchPath, '#FFD54F', 1000);
+    strokeAnim.onComplete = function() {
+      if (onDone) onDone();
+    };
+    addAnimation(strokeAnim);
+  }
+
+  // ── Animate only the leaf grow at a slot (no stroke) ──
+  function animateLeafGrow(pledge, slot) {
+    var rotation = (Math.random() - 0.5) * 1.2;
+    var growAnim = new LeafGrowAnim(slot, pledge, 500);
+    growAnim.rotation = rotation;
+
+    growAnim.onComplete = function() {
+      slot.occupied = true;
+      slot.leaf = pledge;
+      slot.rotation = rotation;
+      pledge.slotId = slot.id;
+    };
+
+    addAnimation(growAnim);
+  }
+
   return {
     setTreeData: setTreeData,
     start: start,
     addAnimation: addAnimation,
     isAnimating: isAnimating,
     animatePledge: animatePledge,
+    animateStrokeToSlot: animateStrokeToSlot,
+    animateLeafGrow: animateLeafGrow,
     BranchStrokeAnim: BranchStrokeAnim,
     LeafGrowAnim: LeafGrowAnim
   };

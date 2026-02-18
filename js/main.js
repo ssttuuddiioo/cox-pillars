@@ -9,7 +9,8 @@
   var thankYouText = document.getElementById('thank-you-text');
   var totalPlaced = 0;
   var MAX_PLEDGES = 5000;
-  var pendingClickPos = null;
+  var pendingSlot = null;
+  var BRANCH_HIT_RADIUS = 60;
 
   // ── Initialize ──
   function init() {
@@ -30,24 +31,34 @@
     Tooltip.init();
 
     PledgeForm.init(function(pledge) {
-      // Called after form submit — place leaf near where user clicked
+      // Called after form submit
       exitChartMode();
       var slot;
-      if (pendingClickPos) {
-        slot = TreeGenerator.findNearestSlot(treeData, pendingClickPos.x, pendingClickPos.y);
-        pendingClickPos = null;
+      if (pendingSlot) {
+        // Slot was already reserved by the stroke animation
+        slot = pendingSlot;
+        pendingSlot = null;
+        // Only grow the leaf (stroke already played)
+        Animations.animateLeafGrow(pledge, slot);
       } else {
         slot = TreeGenerator.findAvailableSlot(treeData);
+        if (!slot) {
+          showThankYou('The tree is fully grown!');
+          return;
+        }
+        // Full stroke + leaf animation
+        Animations.animatePledge(pledge, slot);
       }
-      if (!slot) {
-        showThankYou('The tree is fully grown!');
-        return;
-      }
-      Animations.animatePledge(pledge, slot);
       totalPlaced++;
       checkBranchGrowth();
       updateCounter();
       showThankYou('Thank you, ' + pledge.name + '!');
+    }, function() {
+      // Called when modal dismissed without submit — unreserve slot
+      if (pendingSlot) {
+        pendingSlot.reserved = false;
+        pendingSlot = null;
+      }
     });
 
     wireCanvasEvents();
@@ -63,6 +74,7 @@
     function handleInteraction(clientX, clientY) {
       if (PledgeForm.isOpen()) return;
       if (treeData.chartMode) return;
+      if (pendingSlot) return; // stroke animation in progress
 
       var rect = canvas.getBoundingClientRect();
       var sx = clientX - rect.left;
@@ -89,8 +101,25 @@
       } else if (Tooltip.isVisible()) {
         Tooltip.hide();
       } else {
+        if (totalPlaced >= MAX_PLEDGES) {
+          showThankYou('The tree is fully grown!');
+          return;
+        }
+        // Find nearest available slot to the click
+        var nearestSlot = TreeGenerator.findNearestSlot(treeData, norm.x, norm.y);
+        if (nearestSlot) {
+          var slotDist = dist(norm.x, norm.y, nearestSlot.x, nearestSlot.y);
+          if (slotDist < BRANCH_HIT_RADIUS) {
+            // Near a branch — yellow stroke animation, then open modal
+            pendingSlot = nearestSlot;
+            Animations.animateStrokeToSlot(nearestSlot, function() {
+              PledgeForm.open();
+            });
+            return;
+          }
+        }
+        // Not near a branch — open modal immediately
         if (isNearTree(norm.x, norm.y)) {
-          pendingClickPos = { x: norm.x, y: norm.y };
           PledgeForm.open();
         }
       }

@@ -5,9 +5,11 @@ var PledgeForm = (function() {
   var modal, card, pillarContainer, nameInput, messageInput, submitBtn;
   var selectedPillar = null;
   var onSubmit = null; // callback(pledge)
+  var onCancel = null; // callback when modal closed without submit
 
-  function init(submitCallback) {
+  function init(submitCallback, cancelCallback) {
     onSubmit = submitCallback;
+    onCancel = cancelCallback;
     modal = document.getElementById('pledge-modal');
     card = modal.querySelector('.modal-card');
     pillarContainer = document.getElementById('pillar-options');
@@ -130,7 +132,7 @@ var PledgeForm = (function() {
     PledgeStore.add(pledge);
 
     if (onSubmit) onSubmit(pledge);
-    close();
+    close(true);
   }
 
   function open() {
@@ -148,9 +150,10 @@ var PledgeForm = (function() {
     modal.classList.remove('hidden');
   }
 
-  function close() {
+  function close(wasSubmit) {
     Keyboard.hide();
     modal.classList.add('hidden');
+    if (!wasSubmit && onCancel) onCancel();
   }
 
   function isOpen() {
