@@ -15,15 +15,9 @@ var Tooltip = (function() {
 
   function show(screenX, screenY, pledge) {
     nameEl.textContent = pledge.name;
-    pillarDot.style.backgroundColor = pledge.pillar.color;
-    pillarText.textContent = pledge.pillar.icon + ' ' + pledge.pillar.name + ' Pledge';
-
-    if (pledge.message) {
-      messageEl.textContent = pledge.message;
-      messageEl.style.display = 'block';
-    } else {
-      messageEl.style.display = 'none';
-    }
+    pillarDot.style.display = 'none';
+    pillarText.textContent = 'has taken the COX Conserves pledge';
+    messageEl.style.display = 'none';
 
     // Position tooltip above the leaf
     var tipW = el.offsetWidth || 180;

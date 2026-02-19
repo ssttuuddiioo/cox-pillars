@@ -388,9 +388,7 @@
     checkBranchGrowth();
     updateCounter();
 
-    if (added > 0) {
-      showThankYou('+' + added + ' pledges (' + totalPlaced + ' total)');
-    } else {
+    if (added <= 0) {
       showThankYou('The tree is fully grown!');
     }
   }
