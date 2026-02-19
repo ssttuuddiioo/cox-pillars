@@ -12,7 +12,7 @@ var TreeGenerator = (function() {
 
     var MAX_DEPTH = 6;
     var TRUNK_X = NORMALIZED_W / 2;
-    var TRUNK_Y = NORMALIZED_H * 0.87;
+    var TRUNK_Y = NORMALIZED_H * 0.78;
     var TRUNK_LEN = NORMALIZED_H * 0.154;
     var TRUNK_ANGLE = Math.PI / 2;
 

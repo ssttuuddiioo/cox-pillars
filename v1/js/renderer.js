@@ -55,7 +55,7 @@ var Renderer = (function() {
   function drawGround(treeData, alpha) {
     alpha = alpha !== undefined ? alpha : 1;
     if (alpha <= 0.01) return;
-    var groundY = treeData.normalizedH * 0.9;
+    var groundY = treeData.normalizedH * 0.80;
     var p = toScreen(0, groundY);
     var p2 = toScreen(treeData.normalizedW, groundY);
     ctx.beginPath();
