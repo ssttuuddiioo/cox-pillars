@@ -365,47 +365,6 @@ var Renderer = (function() {
       ? treeDataRef.ssSortedSlots
       : leafSlots;
 
-    // ── Disc drop shadow (subtle spread) ──
-    if (easedSS > 0.3 && treeDataRef && treeDataRef.ssRadius) {
-      var dsAlpha = Math.min(0.18, (easedSS - 0.3) * 0.3);
-      var center = toScreen(treeDataRef.ssCenterX, treeDataRef.ssCenterY);
-      var r = treeDataRef.ssRadius * scale;
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(center.x + 4, center.y + 6, r * 1.05, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0, 0, 0, ' + dsAlpha.toFixed(3) + ')';
-      ctx.filter = 'blur(' + Math.round(r * 0.08) + 'px)';
-      ctx.fill();
-      ctx.filter = 'none';
-      ctx.restore();
-    }
-
-    // ── Stems (fade in late) ──
-    if (treeDataRef && treeDataRef.ssStems && easedSS > 0.5) {
-      var stemAlpha = Math.min(1, (easedSS - 0.5) * 2.5);
-      drawScreensaverStems(treeDataRef.ssStems, stemAlpha);
-    }
-
-    // ── Shadow pass (fade in gradually) ──
-    if (easedSS > 0.3) {
-      var shadowBlend = Math.min(1, (easedSS - 0.3) * 2);
-      for (var si = 0; si < slots.length; si++) {
-        var sSlot = slots[si];
-        if (!sSlot.occupied || !sSlot.leaf) continue;
-        if (sSlot.mainBranchIndex >= 0 && sSlot.mainBranchIndex >= activeBranches) continue;
-
-        var sPos = computeLeafPos(sSlot, time, easedChart, easedSS);
-        var sScale = lerp(1, sSlot.ssScale || 1, easedSS);
-        var sRot = lerp(sSlot.rotation || 0, sSlot.ssRotation || 0, easedSS);
-
-        drawScreensaverShadow(
-          sPos.x, sPos.y, sScale, sRot,
-          sSlot.ssShadowDx || 3, sSlot.ssShadowDy || 4,
-          0.15 * shadowBlend
-        );
-      }
-    }
-
     // ── Leaf pass — smooth crossfade between tree style and screensaver style ──
     for (var i = 0; i < slots.length; i++) {
       var slot = slots[i];

@@ -167,14 +167,14 @@ html, body {
 
 .modal-card {
   position: relative;
-  width: 340px;
-  max-width: 90vw;
+  width: calc(100vw - 40px);
+  max-width: 370px;
   max-height: 90vh;
   overflow-y: auto;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
-  padding: 28px 24px 20px;
+  padding: 20px 1px 20px;
   -webkit-transform: translateY(20px);
   transform: translateY(20px);
   transition: -webkit-transform var(--transition), transform var(--transition);
@@ -199,10 +199,11 @@ html, body {
 
 .input-wrapper {
   margin-bottom: 10px;
+  text-align: center;
 }
 
 .input-wrapper input {
-  width: 100%;
+  width: 50%;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
@@ -271,13 +272,13 @@ html, body {
   display: flex;
   -webkit-justify-content: center;
   justify-content: center;
-  margin-bottom: 6px;
+  margin-bottom: 3px;
 }
 
 .kb-key {
   min-width: 28px;
   height: 36px;
-  margin: 0 2px;
+  margin: 0 1px;
   border: none;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.1);
@@ -296,7 +297,7 @@ html, body {
   align-items: center;
   -webkit-justify-content: center;
   justify-content: center;
-  padding: 0 6px;
+  padding: 0 3px;
 }
 
 .kb-key:active {
@@ -308,8 +309,8 @@ html, body {
 }
 
 .kb-key.space {
-  -webkit-flex: 1;
-  flex: 1;
+  -webkit-flex: 0.5;
+  flex: 0.5;
   margin: 0 6px;
 }
 

@@ -2,7 +2,8 @@
 
 var PledgeForm = (function() {
 
-  var modal, card, nameInput, submitBtn;
+  var modal, card, nameInput;
+  var canSubmit = false;
   var onSubmit = null; // callback({ name })
   var onCancel = null; // callback when modal closed without submit
 
@@ -12,7 +13,6 @@ var PledgeForm = (function() {
     modal = document.getElementById('pledge-modal');
     card = modal.querySelector('.modal-card');
     nameInput = document.getElementById('pledge-name');
-    submitBtn = document.getElementById('pledge-submit');
 
     wireEvents();
     initKeyboard();
@@ -30,9 +30,6 @@ var PledgeForm = (function() {
       Keyboard.show();
     }, { passive: false });
 
-    // Submit
-    submitBtn.addEventListener('click', handleSubmit);
-
     // Backdrop click closes modal
     modal.querySelector('.modal-backdrop').addEventListener('click', close);
   }
@@ -41,7 +38,7 @@ var PledgeForm = (function() {
     var kbContainer = document.getElementById('keyboard-container');
     Keyboard.init(kbContainer, function(action) {
       if (action === 'return') {
-        if (!submitBtn.disabled) {
+        if (canSubmit) {
           handleSubmit();
         }
       } else if (action === 'input') {
@@ -51,12 +48,11 @@ var PledgeForm = (function() {
   }
 
   function validate() {
-    var valid = nameInput.value.trim().length > 0;
-    submitBtn.disabled = !valid;
+    canSubmit = nameInput.value.trim().length > 0;
   }
 
   function handleSubmit() {
-    if (submitBtn.disabled) return;
+    if (!canSubmit) return;
     var data = {
       name: nameInput.value.trim()
     };
@@ -68,7 +64,7 @@ var PledgeForm = (function() {
   function open() {
     // Reset form
     nameInput.value = '';
-    submitBtn.disabled = true;
+    canSubmit = false;
 
     modal.classList.remove('hidden');
 

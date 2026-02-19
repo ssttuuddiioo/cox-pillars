@@ -53,7 +53,7 @@ var Keyboard = (function() {
           btn.setAttribute('data-key', 'backspace');
         } else if (key === 'return') {
           btn.className += ' return-key';
-          btn.textContent = 'return';
+          btn.textContent = 'Submit';
           btn.setAttribute('data-key', 'return');
         } else if (key === 'shift') {
           btn.className += ' wide';
@@ -139,6 +139,17 @@ var Keyboard = (function() {
 
   function triggerChange() {
     if (onInputChange) onInputChange('input');
+    autoShiftIfEmpty();
+  }
+
+  function autoShiftIfEmpty() {
+    if (!activeInput) return;
+    var val = activeInput.value;
+    var shouldShift = val.length === 0;
+    if (shouldShift !== isShifted) {
+      isShifted = shouldShift;
+      render();
+    }
   }
 
   function setActiveInput(inputEl) {
@@ -146,6 +157,8 @@ var Keyboard = (function() {
     if (activeInput) activeInput.classList.remove('active');
     activeInput = inputEl;
     if (activeInput) activeInput.classList.add('active');
+    // Auto-shift for first letter of a name
+    autoShiftIfEmpty();
   }
 
   function show() {
