@@ -233,6 +233,44 @@ html, body {
   color: rgba(255, 255, 255, 0.3);
 }
 
+/* ── Email Suffixes ── */
+.email-suffixes {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  transition: opacity var(--transition);
+}
+
+.email-suffixes.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.email-suffix-btn {
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.email-suffix-btn:active {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
 /* ── Submit Button ── */
 #pledge-submit {
   width: 100%;
@@ -539,7 +577,7 @@ body.screensaver-active #ss-overlays {
   opacity: 1;
 }
 
-#ss-overlays img,
+#ss-overlays > img,
 #ss-overlays .ss-title {
   position: absolute;
   opacity: 0;
@@ -547,10 +585,17 @@ body.screensaver-active #ss-overlays {
 }
 
 .ss-title {
-  top: calc(-12% - 100px);
+  top: calc(-12% - 200px);
   left: 50%;
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  gap: 100px;
   font-family: var(--font);
   font-weight: 700;
   font-size: 18px;
@@ -559,6 +604,12 @@ body.screensaver-active #ss-overlays {
   color: #fff;
   white-space: nowrap;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.ss-title-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
 }
 
 /* Blue clouds — half size, drift left to right */

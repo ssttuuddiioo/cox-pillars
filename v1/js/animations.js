@@ -122,7 +122,7 @@ var Animations = (function() {
       document.body.style.background = 'rgb(' + bgR + ',' + bgG + ',' + bgB + ')';
     } else {
       // Hide all overlays and titles when not in screensaver
-      var ssSvgEls = document.querySelectorAll('#ss-overlays img');
+      var ssSvgEls = document.querySelectorAll('#ss-overlays > img');
       for (var si = 0; si < ssSvgEls.length; si++) {
         ssSvgEls[si].style.opacity = '0';
       }

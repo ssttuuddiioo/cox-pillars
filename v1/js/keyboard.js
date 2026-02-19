@@ -6,6 +6,7 @@ var Keyboard = (function() {
   var activeInput = null;
   var isShifted = false;
   var onInputChange = null; // callback
+  var returnLabel = 'Submit';
 
   var ROWS = [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
@@ -53,7 +54,7 @@ var Keyboard = (function() {
           btn.setAttribute('data-key', 'backspace');
         } else if (key === 'return') {
           btn.className += ' return-key';
-          btn.textContent = 'Submit';
+          btn.textContent = returnLabel;
           btn.setAttribute('data-key', 'return');
         } else if (key === 'shift') {
           btn.className += ' wide';
@@ -175,12 +176,18 @@ var Keyboard = (function() {
     return container.classList.contains('open');
   }
 
+  function setReturnLabel(label) {
+    returnLabel = label || 'Submit';
+    render();
+  }
+
   return {
     init: init,
     show: show,
     hide: hide,
     isOpen: isOpen,
     setActiveInput: setActiveInput,
+    setReturnLabel: setReturnLabel,
     render: render
   };
 })();

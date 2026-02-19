@@ -1,11 +1,12 @@
-/* ── form.js ── Pledge form modal: name-only, pledges to all 4 pillars ── */
+/* ── form.js ── Pledge form modal: name + email, pledges to all 4 pillars ── */
 
 var PledgeForm = (function() {
 
-  var modal, card, nameInput;
+  var modal, card, nameInput, emailInput, emailSuffixes;
   var canSubmit = false;
-  var onSubmit = null; // callback({ name })
+  var onSubmit = null; // callback({ name, email })
   var onCancel = null; // callback when modal closed without submit
+  var activeField = 'name'; // 'name' or 'email'
 
   function init(submitCallback, cancelCallback) {
     onSubmit = submitCallback;
@@ -13,33 +14,78 @@ var PledgeForm = (function() {
     modal = document.getElementById('pledge-modal');
     card = modal.querySelector('.modal-card');
     nameInput = document.getElementById('pledge-name');
+    emailInput = document.getElementById('pledge-email');
+    emailSuffixes = document.getElementById('email-suffixes');
 
     wireEvents();
     initKeyboard();
   }
 
   function wireEvents() {
-    // Input focus -> open keyboard
+    // Name input focus -> open keyboard on name
     nameInput.addEventListener('click', function() {
-      Keyboard.setActiveInput(nameInput);
-      Keyboard.show();
+      focusField('name');
     });
     nameInput.addEventListener('touchstart', function(e) {
       e.preventDefault();
-      Keyboard.setActiveInput(nameInput);
-      Keyboard.show();
+      focusField('name');
     }, { passive: false });
+
+    // Email input focus -> open keyboard on email
+    emailInput.addEventListener('click', function() {
+      focusField('email');
+    });
+    emailInput.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      focusField('email');
+    }, { passive: false });
+
+    // Email suffix buttons
+    var suffixBtns = emailSuffixes.querySelectorAll('.email-suffix-btn');
+    for (var i = 0; i < suffixBtns.length; i++) {
+      suffixBtns[i].addEventListener('click', handleSuffix);
+    }
 
     // Backdrop click closes modal
     modal.querySelector('.modal-backdrop').addEventListener('click', close);
+  }
+
+  function focusField(field) {
+    activeField = field;
+    if (field === 'name') {
+      Keyboard.setActiveInput(nameInput);
+      emailSuffixes.classList.add('hidden');
+      Keyboard.setReturnLabel('Next');
+    } else {
+      Keyboard.setActiveInput(emailInput);
+      emailSuffixes.classList.remove('hidden');
+      Keyboard.setReturnLabel('Submit');
+    }
+    Keyboard.show();
+  }
+
+  function handleSuffix(e) {
+    var suffix = e.currentTarget.getAttribute('data-suffix');
+    if (!emailInput) return;
+    var maxLen = parseInt(emailInput.getAttribute('maxlength')) || 80;
+    var newVal = emailInput.value + suffix;
+    if (newVal.length <= maxLen) {
+      emailInput.value = newVal;
+    }
+    validate();
   }
 
   function initKeyboard() {
     var kbContainer = document.getElementById('keyboard-container');
     Keyboard.init(kbContainer, function(action) {
       if (action === 'return') {
-        if (canSubmit) {
-          handleSubmit();
+        if (activeField === 'name') {
+          // Move to email field
+          focusField('email');
+        } else {
+          if (canSubmit) {
+            handleSubmit();
+          }
         }
       } else if (action === 'input') {
         validate();
@@ -54,7 +100,8 @@ var PledgeForm = (function() {
   function handleSubmit() {
     if (!canSubmit) return;
     var data = {
-      name: nameInput.value.trim()
+      name: nameInput.value.trim(),
+      email: emailInput.value.trim()
     };
 
     if (onSubmit) onSubmit(data);
@@ -64,17 +111,19 @@ var PledgeForm = (function() {
   function open() {
     // Reset form
     nameInput.value = '';
+    emailInput.value = '';
     canSubmit = false;
+    activeField = 'name';
 
     modal.classList.remove('hidden');
 
     // Auto-focus name input with keyboard open
-    Keyboard.setActiveInput(nameInput);
-    Keyboard.show();
+    focusField('name');
   }
 
   function close(wasSubmit) {
     Keyboard.hide();
+    emailSuffixes.classList.add('hidden');
     modal.classList.add('hidden');
     if (!wasSubmit && onCancel) onCancel();
   }
