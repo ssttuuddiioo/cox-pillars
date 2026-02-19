@@ -1,0 +1,609 @@
+/* ── Fonts ── */
+@font-face {
+  font-family: 'Gotham';
+  src: url('../../assets/gotham/Gotham-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Gotham';
+  src: url('../../assets/gotham/Gotham-Book.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Gotham';
+  src: url('../../assets/gotham/Gotham-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Gotham';
+  src: url('../../assets/gotham/Gotham-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* ── Variables ── */
+:root {
+  --bg-center: #1a3a2a;
+  --bg-edge: #0a1f14;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.65);
+  --pillar-climate: #4CAF50;
+  --pillar-circularity: #26A69A;
+  --pillar-water: #42A5F5;
+  --pillar-habitat: #EF5350;
+  --card-bg: rgba(20, 30, 25, 0.95);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --font: 'Gotham', 'Helvetica Neue', Arial, sans-serif;
+  --radius: 12px;
+  --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+  color: var(--text-primary);
+  background: radial-gradient(ellipse at 50% 60%, var(--bg-center), var(--bg-edge));
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Canvas ── */
+#tree-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  touch-action: none;
+}
+
+/* ── Logo ── */
+#logo-container {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+#cox-logo {
+  width: 44px;
+  height: auto;
+  opacity: 0.9;
+}
+
+/* ── CTA Text ── */
+#cta-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  text-align: center;
+  padding: 20px 24px;
+  background: linear-gradient(to top, rgba(10, 31, 20, 0.9) 0%, transparent 100%);
+  pointer-events: none;
+  transition: opacity var(--transition);
+}
+
+#cta-text p {
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+/* ── Thank You ── */
+#thank-you {
+  position: absolute;
+  bottom: calc(11% + 20px);
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 480px;
+  z-index: 15;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 0.92s ease;
+}
+
+#thank-you p {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+  color: var(--text-primary);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Modal ── */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  transition: opacity var(--transition);
+}
+
+.modal.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.modal-card {
+  position: relative;
+  width: 340px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 28px 24px 20px;
+  -webkit-transform: translateY(20px);
+  transform: translateY(20px);
+  transition: -webkit-transform var(--transition), transform var(--transition);
+}
+
+.modal:not(.hidden) .modal-card {
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+}
+
+.modal-card h2 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* ── Form Fields ── */
+.form-fields {
+  margin-bottom: 16px;
+}
+
+.input-wrapper {
+  margin-bottom: 10px;
+}
+
+.input-wrapper input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+  transition: border-color var(--transition);
+  -webkit-appearance: none;
+}
+
+.input-wrapper input:focus,
+.input-wrapper input.active {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.input-wrapper input::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Submit Button ── */
+#pledge-submit {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), opacity var(--transition);
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  margin-bottom: 16px;
+}
+
+#pledge-submit:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+#pledge-submit:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ── Keyboard ── */
+#keyboard-container {
+  transition: max-height var(--transition), opacity var(--transition);
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+#keyboard-container.open {
+  max-height: 300px;
+  opacity: 1;
+}
+
+.kb-row {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.kb-key {
+  min-width: 28px;
+  height: 36px;
+  margin: 0 2px;
+  border: none;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: background 0.15s ease;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+
+.kb-key:active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.kb-key.wide {
+  min-width: 44px;
+}
+
+.kb-key.space {
+  -webkit-flex: 1;
+  flex: 1;
+  margin: 0 6px;
+}
+
+.kb-key.return-key {
+  min-width: 60px;
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* ── Tooltip ── */
+#leaf-tooltip {
+  position: absolute;
+  z-index: 25;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.25s ease;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+#leaf-tooltip.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tooltip-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.tooltip-pillar {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.tooltip-pillar-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+
+.tooltip-message {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-secondary);
+}
+
+/* ── Take the Pledge Button ── */
+#btn-pledge {
+  position: absolute;
+  bottom: calc(11% + 20px);
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 14px 36px;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 28px;
+  background: rgba(10, 31, 20, 0.8);
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition), border-color var(--transition), opacity var(--transition);
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#btn-pledge:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Controls ── */
+#controls {
+  position: absolute;
+  bottom: 64px;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  z-index: 10;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  gap: 10px;
+  transition: opacity 0.8s ease;
+}
+
+#btn-1x,
+#btn-10x {
+  padding: 10px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  background: rgba(10, 31, 20, 0.7);
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  transition: background var(--transition), border-color var(--transition);
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#btn-1x:hover,
+#btn-10x:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+#btn-1x:disabled,
+#btn-10x:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+#btn-wind,
+#btn-chart,
+#btn-screensaver {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  background: rgba(10, 31, 20, 0.7);
+  cursor: pointer;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  transition: background var(--transition), border-color var(--transition);
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#btn-wind:hover,
+#btn-chart:hover,
+#btn-screensaver:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+#btn-wind.active,
+#btn-chart.active,
+#btn-screensaver.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Screensaver ── */
+body.screensaver-active #controls,
+body.screensaver-active #logo-container,
+body.screensaver-active #cta-text {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.screensaver-active #tree-canvas {
+  pointer-events: none;
+}
+
+body.screensaver-active #btn-pledge {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+body.screensaver-active #btn-screensaver {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Screensaver SVG Overlays ── */
+#ss-overlays {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -55%);
+  transform: translate(-50%, -55%);
+  width: 45%;
+  max-width: 420px;
+  aspect-ratio: 1;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+body.screensaver-active #ss-overlays {
+  opacity: 1;
+}
+
+#ss-overlays img,
+#ss-overlays .ss-title {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+.ss-title {
+  top: calc(-12% - 100px);
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Blue clouds — half size, drift left to right */
+#ss-svg-blue {
+  top: -5%;
+  left: -10%;
+  width: 65%;
+  -webkit-animation: ss-drift 30s linear infinite;
+  animation: ss-drift 30s linear infinite;
+}
+
+@-webkit-keyframes ss-drift {
+  0%   { -webkit-transform: translateX(-5%); }
+  50%  { -webkit-transform: translateX(15%); }
+  100% { -webkit-transform: translateX(-5%); }
+}
+
+@keyframes ss-drift {
+  0%   { transform: translateX(-5%); }
+  50%  { transform: translateX(15%); }
+  100% { transform: translateX(-5%); }
+}
+
+/* Turquoise water — below the circle */
+#ss-svg-turquoise {
+  bottom: -35%;
+  left: 15%;
+  width: 70%;
+}
+
+/* Green recycling — centered on circle, slow rotation */
+#ss-svg-green {
+  top: 50%;
+  left: 50%;
+  width: 130%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  -webkit-animation: ss-rotate 40s linear infinite;
+  animation: ss-rotate 40s linear infinite;
+}
+
+@-webkit-keyframes ss-rotate {
+  from { -webkit-transform: translate(-50%, -50%) rotate(0deg); }
+  to   { -webkit-transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes ss-rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ── Utility ── */
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
