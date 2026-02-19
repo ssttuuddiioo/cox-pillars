@@ -174,7 +174,7 @@
 
         thankYouTimer = setTimeout(function() {
           // Phase 2: Tally + bloom wave (if from screensaver)
-          thankYouText.textContent = totalPeople + ' people have taken the pledge.';
+          thankYouText.textContent = totalPeople + ' people have also taken the pledge.';
           thankYou.style.opacity = '1';
 
           if (pledgingFromScreensaver) {
