@@ -610,6 +610,13 @@ body.screensaver-active #ss-overlays {
   to   { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
+/* Orange habitat — 2 o'clock position */
+#ss-svg-orange {
+  top: -10%;
+  right: -25%;
+  width: 22%;
+}
+
 /* ── Utility ── */
 .hidden {
   opacity: 0;
