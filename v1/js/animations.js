@@ -60,12 +60,14 @@ var Animations = (function() {
       var ssSvgs = [
         document.getElementById('ss-svg-blue'),
         document.getElementById('ss-svg-turquoise'),
-        document.getElementById('ss-svg-green')
+        document.getElementById('ss-svg-green'),
+        document.getElementById('ss-svg-orange')
       ];
       var ssTitles = [
         document.getElementById('ss-title-blue'),
         document.getElementById('ss-title-turquoise'),
-        document.getElementById('ss-title-green')
+        document.getElementById('ss-title-green'),
+        document.getElementById('ss-title-orange')
       ];
       var SS_SVG_HOLD = 5;
       var SS_SVG_FADE = 2;
@@ -102,7 +104,8 @@ var Animations = (function() {
       var SS_BG = [
         [12, 20, 32],   // Blue: dark navy
         [22, 48, 45],   // Turquoise: dark teal
-        [42, 85, 22]    // Green: dark forest
+        [42, 85, 22],   // Green: dark forest
+        [52, 18, 12]    // Orange: dark brown
       ];
       var bgR, bgG, bgB;
       if (fadeOut) {
