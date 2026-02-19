@@ -48,9 +48,9 @@ var Animations = (function() {
       if (treeData.screensaverTransition === undefined) treeData.screensaverTransition = 0;
       var ssTarget = treeData.screensaverMode ? 1 : 0;
       if (treeData.screensaverTransition < ssTarget) {
-        treeData.screensaverTransition = Math.min(ssTarget, treeData.screensaverTransition + 0.004);
+        treeData.screensaverTransition = Math.min(ssTarget, treeData.screensaverTransition + 0.013);
       } else if (treeData.screensaverTransition > ssTarget) {
-        treeData.screensaverTransition = Math.max(ssTarget, treeData.screensaverTransition - 0.012);
+        treeData.screensaverTransition = Math.max(ssTarget, treeData.screensaverTransition - 0.024);
       }
     }
 
