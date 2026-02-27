@@ -63,11 +63,11 @@ var Animations = (function() {
         document.getElementById('ss-svg-green'),
         document.getElementById('ss-svg-orange')
       ];
-      var ssTitles = [
-        document.getElementById('ss-title-blue'),
-        document.getElementById('ss-title-turquoise'),
-        document.getElementById('ss-title-green'),
-        document.getElementById('ss-title-orange')
+      var ssBlocks = [
+        document.getElementById('ss-block-blue'),
+        document.getElementById('ss-block-turquoise'),
+        document.getElementById('ss-block-green'),
+        document.getElementById('ss-block-orange')
       ];
       var SS_SVG_HOLD = 5;
       var SS_SVG_FADE = 2;
@@ -87,22 +87,22 @@ var Animations = (function() {
       }
 
       for (var si = 0; si < ssSvgs.length; si++) {
-        var svgOpacity, titleOpacity;
+        var svgOpacity, blockOpacity;
         if (si === activeIdx) {
           svgOpacity = fadeOut ? '0' : '1';
-          titleOpacity = svgOpacity;
+          blockOpacity = svgOpacity;
         } else {
           var nextIdx = (activeIdx + 1) % ssSvgs.length;
           svgOpacity = (si === nextIdx && fadeOut) ? '1' : '0';
-          titleOpacity = svgOpacity;
+          blockOpacity = svgOpacity;
         }
         if (ssSvgs[si]) ssSvgs[si].style.opacity = svgOpacity;
-        if (ssTitles[si]) ssTitles[si].style.opacity = titleOpacity;
+        if (ssBlocks[si]) ssBlocks[si].style.opacity = blockOpacity;
       }
 
       // Cycle background color per pillar
       var SS_BG = [
-        [12, 20, 32],   // Blue: dark navy
+        [12, 22, 38],   // Blue/Carbon & Climate: #0C1626
         [22, 48, 45],   // Turquoise: dark teal
         [42, 85, 22],   // Green: dark forest
         [52, 18, 12]    // Orange: dark brown
@@ -120,15 +120,34 @@ var Animations = (function() {
         bgB = SS_BG[activeIdx][2];
       }
       document.body.style.background = 'rgb(' + bgR + ',' + bgG + ',' + bgB + ')';
+
+      // Dynamic button color cycling to match active pillar
+      var btnPledge = document.getElementById('btn-pledge');
+      if (btnPledge) {
+        var SS_BTN_COLORS = ['#2952CC', '#1A8A8A', '#2E7D32', '#D84315'];
+        var btnColor = SS_BTN_COLORS[activeIdx];
+        if (fadeOut) {
+          var nxtBtn = (activeIdx + 1) % SS_BTN_COLORS.length;
+          var blend = (withinSlot - SS_SVG_HOLD) / SS_SVG_FADE;
+          btnColor = lerpColor(SS_BTN_COLORS[activeIdx], SS_BTN_COLORS[nxtBtn], blend);
+        }
+        btnPledge.style.background = btnColor;
+        btnPledge.style.borderColor = btnColor;
+        btnPledge.style.boxShadow =
+          '0 0 0 5px transparent, ' +
+          '0 0 0 7px ' + btnColor + '73, ' +
+          '0 0 0 12px transparent, ' +
+          '0 0 0 14px ' + btnColor + '4D';
+      }
     } else {
-      // Hide all overlays and titles when not in screensaver
+      // Hide all overlays and pillar blocks when not in screensaver
       var ssSvgEls = document.querySelectorAll('#ss-overlays > img');
       for (var si = 0; si < ssSvgEls.length; si++) {
         ssSvgEls[si].style.opacity = '0';
       }
-      var ssTitleEls = document.querySelectorAll('#ss-overlays .ss-title');
-      for (var si = 0; si < ssTitleEls.length; si++) {
-        ssTitleEls[si].style.opacity = '0';
+      var ssBlockEls = document.querySelectorAll('#ss-header .ss-pillar-block');
+      for (var si = 0; si < ssBlockEls.length; si++) {
+        ssBlockEls[si].style.opacity = '0';
       }
       // Restore default background
       document.body.style.background = '';
@@ -139,11 +158,6 @@ var Animations = (function() {
     var treeAlpha = 1 - Math.max(chartT, ssT);
 
     Renderer.clear();
-
-    // Draw ground line
-    if (treeData) {
-      Renderer.drawGround(treeData, treeAlpha);
-    }
 
     // Draw bare tree with ambient sway (only active branches)
     if (treeData) {
@@ -187,9 +201,14 @@ var Animations = (function() {
     this.branchPath = branchPath;
     this.color = color;
     this.duration = duration || 1200;
+    this.fadeDuration = 400;
     this.startTime = null;
     this.progress = 0;
+    this.alpha = 1;
+    this.fading = false;
+    this.fadeStart = null;
     this.onComplete = null;
+    this.completeFired = false;
   }
 
   BranchStrokeAnim.prototype.update = function(timestamp) {
@@ -197,14 +216,29 @@ var Animations = (function() {
     var elapsed = timestamp - this.startTime;
     this.progress = Math.min(elapsed / this.duration, 1);
     this.progress = easeOutCubic(this.progress);
+
+    // Fire onComplete once when stroke finishes, then begin fade
+    if (this.progress >= 1 && !this.completeFired) {
+      this.completeFired = true;
+      this.fading = true;
+      this.fadeStart = timestamp;
+      if (this.onComplete) this.onComplete();
+    }
+
+    if (this.fading) {
+      var fadeElapsed = timestamp - this.fadeStart;
+      this.alpha = Math.max(0, 1 - fadeElapsed / this.fadeDuration);
+    }
   };
 
   BranchStrokeAnim.prototype.draw = function(time) {
-    Renderer.drawStrokePath(this.branchPath, this.color, this.progress, time);
+    if (this.alpha > 0) {
+      Renderer.drawStrokePath(this.branchPath, this.color, this.progress, time, this.alpha);
+    }
   };
 
   BranchStrokeAnim.prototype.isComplete = function() {
-    return this.progress >= 1;
+    return this.fading && this.alpha <= 0;
   };
 
   // ── Leaf Grow Animation ──
@@ -236,17 +270,17 @@ var Animations = (function() {
   };
 
   // ── Animate a pledge (stroke + leaf grow sequence) ──
-  function animatePledge(pledge, slot) {
+  function animatePledge(pledge, slot, onLeafComplete) {
     // Reserve the slot immediately so no other pledge takes it
     // But don't mark as occupied yet (so static renderer doesn't draw it)
     slot.reserved = true;
 
-    var strokeAnim = new BranchStrokeAnim(slot.branchPath, pledge.pillar.color, 1000);
+    var strokeAnim = new BranchStrokeAnim(slot.branchPath, pledge.pillar.color, 500);
 
     strokeAnim.onComplete = function() {
       // Start leaf grow animation — smooth unfurl at the stroke endpoint
       var rotation = (Math.random() - 0.5) * 1.2;
-      var growAnim = new LeafGrowAnim(slot, pledge, 1200);
+      var growAnim = new LeafGrowAnim(slot, pledge, 600);
       growAnim.rotation = rotation;
 
       growAnim.onComplete = function() {
@@ -255,6 +289,7 @@ var Animations = (function() {
         slot.leaf = pledge;
         slot.rotation = rotation;
         pledge.slotId = slot.id;
+        if (onLeafComplete) onLeafComplete(slot, pledge);
       };
 
       addAnimation(growAnim);

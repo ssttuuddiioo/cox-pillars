@@ -67,8 +67,10 @@ var Renderer = (function() {
   }
 
   // ── Draw tree branches recursively (quadratic bezier curves) ──
-  function drawTree(branch, time, maxDepth, activeBranches, treeAlpha) {
+  function drawTree(branch, time, maxDepth, activeBranches, treeAlpha, accumX, accumY) {
     treeAlpha = treeAlpha !== undefined ? treeAlpha : 1;
+    accumX = accumX || 0;
+    accumY = accumY || 0;
     if (treeAlpha <= 0.01) return;
     // Skip branches belonging to inactive main branches
     if (branch.mainBranchIndex >= 0 && branch.mainBranchIndex >= activeBranches) return;
@@ -76,9 +78,14 @@ var Renderer = (function() {
     var swayEnd = applySway(branch, time, maxDepth);
     var swayCP = applySwayCP(branch, time, maxDepth);
 
-    var s = toScreen(branch.start.x, branch.start.y);
-    var cp = toScreen(swayCP.x, swayCP.y);
-    var e = toScreen(swayEnd.x, swayEnd.y);
+    // This branch's own sway delta
+    var ownEndOX = swayEnd.x - branch.end.x;
+    var ownEndOY = swayEnd.y - branch.end.y;
+
+    // Shift all points by accumulated parent sway
+    var s = toScreen(branch.start.x + accumX, branch.start.y + accumY);
+    var cp = toScreen(swayCP.x + accumX, swayCP.y + accumY);
+    var e = toScreen(swayEnd.x + accumX, swayEnd.y + accumY);
 
     ctx.beginPath();
     ctx.moveTo(s.x, s.y);
@@ -90,8 +97,11 @@ var Renderer = (function() {
     ctx.lineCap = 'round';
     ctx.stroke();
 
+    // Children inherit accumulated parent sway + this branch's own end sway
+    var newAccumX = accumX + ownEndOX;
+    var newAccumY = accumY + ownEndOY;
     for (var i = 0; i < branch.children.length; i++) {
-      drawTree(branch.children[i], time, maxDepth, activeBranches, treeAlpha);
+      drawTree(branch.children[i], time, maxDepth, activeBranches, treeAlpha, newAccumX, newAccumY);
     }
   }
 
@@ -136,20 +146,31 @@ var Renderer = (function() {
 
   // ── Get swayed position for a leaf slot ──
   function getSwayedSlotPos(slot, time) {
-    var lastBranch = slot.branchPath[slot.branchPath.length - 1];
-    if (!lastBranch) return { x: slot.x, y: slot.y };
+    if (!slot.branchPath || slot.branchPath.length === 0) {
+      return { x: slot.x, y: slot.y };
+    }
 
-    // Sway proportional to branchT (position along the branch)
     var branchT = slot.branchT || 1.0;
-    var amt = lastBranch.depth * 0.4 * branchT;
-    var freq = 0.35 + (lastBranch.id % 19) * 0.015;
-    var ox = Math.sin(time * freq) * amt;
-    var oy = Math.cos(time * freq * 0.7) * amt * 0.35;
-    var wo = windOffset(lastBranch.depth, lastBranch.id + slot.id, time, branchT);
+    var accumX = 0;
+    var accumY = 0;
+
+    // Accumulate full sway from all ancestor branches (all except the last)
+    for (var i = 0; i < slot.branchPath.length - 1; i++) {
+      var b = slot.branchPath[i];
+      var sw = applySway(b, time, 6);
+      accumX += sw.x - b.end.x;
+      accumY += sw.y - b.end.y;
+    }
+
+    // Last branch: scale its sway contribution by branchT
+    var lastBranch = slot.branchPath[slot.branchPath.length - 1];
+    var lastSway = applySway(lastBranch, time, 6);
+    accumX += (lastSway.x - lastBranch.end.x) * branchT;
+    accumY += (lastSway.y - lastBranch.end.y) * branchT;
 
     return {
-      x: slot.x + ox + wo.x,
-      y: slot.y + oy + wo.y
+      x: slot.x + accumX,
+      y: slot.y + accumY
     };
   }
 
@@ -224,18 +245,33 @@ var Renderer = (function() {
 
   // ── Draw stroke animation along a curved branch path ──
   function drawStrokePath(branchPath, color, progress, time) {
-    // Compute total path length using bezier approximation
+    // Pre-compute swayed+accumulated positions for each segment
     var totalLen = 0;
     var segLens = [];
+    var segData = [];
+    var accumX = 0, accumY = 0;
+
     for (var i = 0; i < branchPath.length; i++) {
       var b = branchPath[i];
       var swayEnd = applySway(b, time, 6);
       var swayCP = applySwayCP(b, time, 6);
-      var len = TreeGenerator.quadBezierLength(
-        b.start.x, b.start.y, swayCP.x, swayCP.y, swayEnd.x, swayEnd.y
-      );
+      var ownEndOX = swayEnd.x - b.end.x;
+      var ownEndOY = swayEnd.y - b.end.y;
+
+      var sX = b.start.x + accumX;
+      var sY = b.start.y + accumY;
+      var cpX = swayCP.x + accumX;
+      var cpY = swayCP.y + accumY;
+      var eX = swayEnd.x + accumX;
+      var eY = swayEnd.y + accumY;
+
+      segData.push({ sX: sX, sY: sY, cpX: cpX, cpY: cpY, eX: eX, eY: eY });
+      var len = TreeGenerator.quadBezierLength(sX, sY, cpX, cpY, eX, eY);
       segLens.push(len);
       totalLen += len;
+
+      accumX += ownEndOX;
+      accumY += ownEndOY;
     }
 
     var drawnLen = progress * totalLen;
@@ -250,16 +286,14 @@ var Renderer = (function() {
     ctx.shadowBlur = 6 * scale;
 
     for (var j = 0; j < branchPath.length; j++) {
-      var branch = branchPath[j];
+      var seg = segData[j];
       var segLen = segLens[j];
-      var swE = applySway(branch, time, 6);
-      var swC = applySwayCP(branch, time, 6);
-      var s = toScreen(branch.start.x, branch.start.y);
-      var cp = toScreen(swC.x, swC.y);
+      var s = toScreen(seg.sX, seg.sY);
+      var cp = toScreen(seg.cpX, seg.cpY);
 
       if (accumulated + segLen <= drawnLen) {
         // Full curved segment
-        var e = toScreen(swE.x, swE.y);
+        var e = toScreen(seg.eX, seg.eY);
         ctx.beginPath();
         ctx.moveTo(s.x, s.y);
         ctx.quadraticCurveTo(cp.x, cp.y, e.x, e.y);
@@ -269,12 +303,10 @@ var Renderer = (function() {
         // Partial segment: draw up to parameter t
         var remain = drawnLen - accumulated;
         var t = remain / segLen;
-        // Subdivide bezier at t to get partial curve endpoint
-        var px = TreeGenerator.quadBezierAt(branch.start.x, swC.x, swE.x, t);
-        var py = TreeGenerator.quadBezierAt(branch.start.y, swC.y, swE.y, t);
-        // For a partial quadratic bezier, use de Casteljau subdivision
-        var cp1x = lerp(branch.start.x, swC.x, t);
-        var cp1y = lerp(branch.start.y, swC.y, t);
+        var px = TreeGenerator.quadBezierAt(seg.sX, seg.cpX, seg.eX, t);
+        var py = TreeGenerator.quadBezierAt(seg.sY, seg.cpY, seg.eY, t);
+        var cp1x = lerp(seg.sX, seg.cpX, t);
+        var cp1y = lerp(seg.sY, seg.cpY, t);
         var pe = toScreen(px, py);
         var scp = toScreen(cp1x, cp1y);
         ctx.beginPath();

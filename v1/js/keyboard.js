@@ -60,7 +60,7 @@ var Keyboard = (function() {
           btn.className += ' wide';
           btn.innerHTML = '&#8679;';
           btn.setAttribute('data-key', 'shift');
-          if (isShifted) btn.style.background = 'rgba(255,255,255,0.25)';
+          if (isShifted) btn.classList.add('active');
         } else if (key === '123') {
           btn.className += ' wide';
           btn.textContent = '123';

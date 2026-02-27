@@ -4,9 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
   <title>Cox Conserves - Tree Pledge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<div id="app-frame">
 
   <!-- Logo -->
   <div id="logo-container">
@@ -32,28 +36,76 @@
     <p>Touch the tree to take the pledge.</p>
   </div>
 
-  <!-- Thank you overlay -->
-  <div id="thank-you" class="hidden">
-    <p id="thank-you-text"></p>
+  <!-- Thank-you TOP overlay -->
+  <div id="thank-you-top" class="thank-you-overlay hidden">
+    <p id="thank-you-heading">Thank you<br>for pledging.</p>
   </div>
 
-  <!-- Pledge form modal — no pillar picker, just name -->
+  <!-- Thank-you BOTTOM overlay -->
+  <div id="thank-you-bottom" class="thank-you-overlay hidden">
+    <p id="thank-you-count"></p>
+    <p id="thank-you-tally">people have also taken<br>the pledge.</p>
+
+  </div>
+
+  <!-- Pledge form modal — full-screen redesign -->
   <div id="pledge-modal" class="modal hidden">
     <div class="modal-backdrop"></div>
-    <div class="modal-card">
-      <h2>Take the Pledge</h2>
+    <div class="pledge-fullscreen">
+
+      <!-- Close button -->
+      <button type="button" id="pledge-close-btn" class="pledge-close-btn" aria-label="Close">&times;</button>
+
+      <!-- Decorative header -->
+      <div class="pledge-header">
+        <svg class="pledge-droplet" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 0 C16 0 0 20 0 28 C0 36 7 42 16 42 C25 42 32 36 32 28 C32 20 16 0 16 0Z" fill="white"/>
+        </svg>
+      </div>
+      <h2 class="pledge-title">TAKE THE PLEDGE</h2>
+
+      <!-- Dynamic pledge statement -->
+      <p class="pledge-statement">
+        I, <span id="pledge-name-display" class="pledge-name-fill">_____</span> commit to
+        making an impact across all four sustainability pillars.
+      </p>
+
+      <!-- Form fields -->
       <div class="form-fields">
-        <div class="input-wrapper">
-          <input type="text" id="pledge-name" placeholder="Your name" maxlength="40" readonly>
+        <div class="input-group">
+          <label class="input-label" for="pledge-name">YOUR NAME</label>
+          <input type="text" id="pledge-name" maxlength="40" readonly>
         </div>
-        <div class="input-wrapper">
-          <input type="text" id="pledge-email" placeholder="Email" maxlength="80" readonly>
+        <div class="input-group">
+          <label class="input-label" for="pledge-email">YOUR EMAIL</label>
+          <input type="text" id="pledge-email" maxlength="80" readonly>
         </div>
         <div id="email-suffixes" class="email-suffixes hidden">
           <button type="button" class="email-suffix-btn" data-suffix="@cox.com">@cox.com</button>
+          <button type="button" class="email-suffix-btn" data-suffix="@coxinc.com">@coxinc.com</button>
+          <button type="button" class="email-suffix-btn" data-suffix="@coxautoinc.com">@coxautoinc.com</button>
         </div>
       </div>
+
+      <!-- Keyboard -->
       <div id="keyboard-container"></div>
+
+      <!-- Submit button -->
+      <button type="button" id="pledge-submit-btn" class="pledge-submit-btn" disabled>SUBMIT</button>
+    </div>
+  </div>
+
+  <!-- About modal — full-screen pillar detail -->
+  <div id="about-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="about-fullscreen">
+      <button type="button" id="about-back-btn" class="about-back-btn" aria-label="Back">&larr; BACK</button>
+      <div class="about-icon">
+        <img id="about-pillar-icon" src="" alt="">
+      </div>
+      <h2 class="about-title" id="about-title"></h2>
+      <p class="about-subtitle" id="about-subtitle"></p>
+      <div class="about-body" id="about-body"></div>
     </div>
   </div>
 
@@ -62,34 +114,63 @@
     <p class="tooltip-name"></p>
     <p class="tooltip-pillar"><span class="tooltip-pillar-dot"></span><span class="tooltip-pillar-text"></span></p>
     <p class="tooltip-message"></p>
+    <div class="tooltip-tail"></div>
   </div>
 
-  <!-- Screensaver pillar SVG overlays + titles -->
+  <!-- Screensaver ABOUT link -->
+  <div id="ss-about">
+    <span class="ss-about-text">ABOUT</span>
+    <span class="ss-about-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="11" r="10" fill="white"/>
+        <text x="11" y="15.5" text-anchor="middle" fill="#0C1626" font-family="Georgia, serif" font-size="14" font-style="italic">i</text>
+      </svg>
+    </span>
+  </div>
+
+  <!-- Screensaver pillar header (icon + title + blurb) -->
+  <div id="ss-header">
+    <div class="ss-pillar-block" id="ss-block-blue">
+      <img class="ss-header-icon" src="../assets/svg/blue-icon.svg" alt="">
+      <span class="ss-header-title">Carbon &amp; Climate</span>
+      <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+    </div>
+    <div class="ss-pillar-block" id="ss-block-turquoise">
+      <img class="ss-header-icon" src="../assets/svg/torquois-icon.svg" alt="">
+      <span class="ss-header-title">Water</span>
+      <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+    </div>
+    <div class="ss-pillar-block" id="ss-block-green">
+      <img class="ss-header-icon" src="../assets/svg/green-icon.svg" alt="">
+      <span class="ss-header-title">Circularity &amp; Waste</span>
+      <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+    </div>
+    <div class="ss-pillar-block" id="ss-block-orange">
+      <img class="ss-header-icon" src="../assets/svg/orange-icon.svg" alt="">
+      <span class="ss-header-title">Habitat &amp; Species</span>
+      <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+    </div>
+  </div>
+
+  <!-- Screensaver pillar SVG overlays -->
   <div id="ss-overlays">
     <img id="ss-svg-blue" src="../assets/svg/blue.svg" alt="">
     <img id="ss-svg-turquoise" src="../assets/svg/torquois.svg" alt="">
     <img id="ss-svg-green" src="../assets/svg/green.svg" alt="">
     <img id="ss-svg-orange" src="../assets/svg/orange.svg" alt="">
-    <span class="ss-title" id="ss-title-blue"><img class="ss-title-icon" src="../assets/svg/blue-icon.svg" alt="">Carbon &amp; Climate</span>
-    <span class="ss-title" id="ss-title-turquoise"><img class="ss-title-icon" src="../assets/svg/torquois-icon.svg" alt="">Water</span>
-    <span class="ss-title" id="ss-title-green"><img class="ss-title-icon" src="../assets/svg/green-icon.svg" alt="">Circularity &amp; Waste</span>
-    <span class="ss-title" id="ss-title-orange"><img class="ss-title-icon" src="../assets/svg/orange-icon.svg" alt="">Habitat &amp; Species</span>
   </div>
 
-  <!-- Controls -->
+
+</div><!-- /app-frame -->
+
+<!-- Controls (outside frame, right side) -->
+<div id="controls-wrapper">
   <div id="controls">
     <button id="btn-wind" aria-label="Toggle wind">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 7h7c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2" stroke="white" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.85"/>
         <path d="M3 10.5h10c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2" stroke="white" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.65"/>
         <path d="M3 14h4.5c.8 0 1.5.7 1.5 1.5S8.3 17 7.5 17 6 16.3 6 15.5" stroke="white" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.45"/>
-      </svg>
-    </button>
-    <button id="btn-chart" aria-label="Chart view">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="9" cy="9" r="7.5" stroke="white" stroke-width="1.2" fill="none" opacity="0.7"/>
-        <path d="M9 1.5 A7.5 7.5 0 0 1 16.5 9 L9 9 Z" fill="white" opacity="0.5"/>
-        <path d="M9 1.5 A7.5 7.5 0 0 0 2.2 13 L9 9 Z" fill="white" opacity="0.3"/>
       </svg>
     </button>
     <button id="btn-screensaver" aria-label="Screensaver">
@@ -102,6 +183,17 @@
     <button id="btn-1x">+1</button>
     <button id="btn-10x">+100</button>
   </div>
+
+  <!-- Page/state navigation -->
+  <div id="nav-controls">
+    <span class="nav-label">PAGES</span>
+    <button class="nav-btn" data-state="tree">Tree</button>
+    <button class="nav-btn" data-state="form">Form</button>
+    <button class="nav-btn" data-state="screensaver">Screensaver</button>
+    <button class="nav-btn" data-state="thankyou">Thank You</button>
+    <button class="nav-btn" data-state="about">About</button>
+  </div>
+</div>
 
   <!-- Scripts (order matters, all defer) -->
   <script src="js/utils.js" defer></script>

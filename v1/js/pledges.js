@@ -40,6 +40,36 @@ function createPledge(name, pillar, message) {
   };
 }
 
+// ── Server-side persistence for pledge entries (name + email) ──
+
+var EntryStore = {
+  _count: 0,
+
+  load: function() {
+    var self = this;
+    fetch('/api/entries')
+      .then(function(r) { return r.json(); })
+      .then(function(data) { self._count = data.count || 0; })
+      .catch(function() { self._count = 0; });
+  },
+
+  add: function(name, email) {
+    var self = this;
+    fetch('/api/entry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, email: email || '' })
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) { self._count = data.count || self._count + 1; })
+      .catch(function() { self._count++; });
+  },
+
+  count: function() {
+    return this._count;
+  }
+};
+
 // ── Dummy Data ──
 
 var DUMMY_NAMES = [

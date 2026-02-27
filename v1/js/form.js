@@ -2,7 +2,7 @@
 
 var PledgeForm = (function() {
 
-  var modal, card, nameInput, emailInput, emailSuffixes;
+  var modal, nameInput, emailInput, emailSuffixes, nameDisplay, submitBtn;
   var canSubmit = false;
   var onSubmit = null; // callback({ name, email })
   var onCancel = null; // callback when modal closed without submit
@@ -12,10 +12,11 @@ var PledgeForm = (function() {
     onSubmit = submitCallback;
     onCancel = cancelCallback;
     modal = document.getElementById('pledge-modal');
-    card = modal.querySelector('.modal-card');
     nameInput = document.getElementById('pledge-name');
     emailInput = document.getElementById('pledge-email');
     emailSuffixes = document.getElementById('email-suffixes');
+    nameDisplay = document.getElementById('pledge-name-display');
+    submitBtn = document.getElementById('pledge-submit-btn');
 
     wireEvents();
     initKeyboard();
@@ -46,8 +47,22 @@ var PledgeForm = (function() {
       suffixBtns[i].addEventListener('click', handleSuffix);
     }
 
-    // Backdrop click closes modal
-    modal.querySelector('.modal-backdrop').addEventListener('click', close);
+    // Close button
+    var closeBtn = document.getElementById('pledge-close-btn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function() { close(); });
+    }
+
+    // Submit button
+    if (submitBtn) {
+      submitBtn.addEventListener('click', function() {
+        if (canSubmit) handleSubmit();
+      });
+      submitBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (canSubmit) handleSubmit();
+      }, { passive: false });
+    }
   }
 
   function focusField(field) {
@@ -59,7 +74,7 @@ var PledgeForm = (function() {
     } else {
       Keyboard.setActiveInput(emailInput);
       emailSuffixes.classList.remove('hidden');
-      Keyboard.setReturnLabel('Submit');
+      Keyboard.setReturnLabel('Done');
     }
     Keyboard.show();
   }
@@ -89,12 +104,20 @@ var PledgeForm = (function() {
         }
       } else if (action === 'input') {
         validate();
+        updateNameDisplay();
       }
     });
   }
 
   function validate() {
     canSubmit = nameInput.value.trim().length > 0;
+    if (submitBtn) submitBtn.disabled = !canSubmit;
+  }
+
+  function updateNameDisplay() {
+    if (!nameDisplay) return;
+    var name = nameInput.value.trim();
+    nameDisplay.textContent = name.length > 0 ? name : '_____';
   }
 
   function handleSubmit() {
@@ -114,8 +137,11 @@ var PledgeForm = (function() {
     emailInput.value = '';
     canSubmit = false;
     activeField = 'name';
+    if (nameDisplay) nameDisplay.textContent = '_____';
+    if (submitBtn) submitBtn.disabled = true;
 
     modal.classList.remove('hidden');
+    document.body.classList.add('form-open');
 
     // Auto-focus name input with keyboard open
     focusField('name');
@@ -125,6 +151,7 @@ var PledgeForm = (function() {
     Keyboard.hide();
     emailSuffixes.classList.add('hidden');
     modal.classList.add('hidden');
+    document.body.classList.remove('form-open');
     if (!wasSubmit && onCancel) onCancel();
   }
 

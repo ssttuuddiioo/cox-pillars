@@ -5,9 +5,7 @@
 
   var treeData;
   var canvas;
-  var ctaText = document.getElementById('cta-text');
-  var thankYou = document.getElementById('thank-you');
-  var thankYouText = document.getElementById('thank-you-text');
+  var thankYouTop, thankYouBottom, thankYouCount, thankYouTally;
   var totalPlaced = 0;
   var totalPeople = 0;
   var MAX_PLEDGES = 5000;
@@ -16,6 +14,37 @@
   var thankYouTimer = null;
   var hiddenSlots = [];
   var pledgingFromScreensaver = false;
+  var idleTimer = null;
+  var IDLE_TIMEOUT = 60000; // 1 minute
+
+  // ── About page content per pillar ──
+  var PILLAR_KEYS = ['blue', 'turquoise', 'green', 'orange'];
+  var ABOUT_CONTENT = {
+    blue: {
+      icon: '../assets/svg/blue-icon.svg',
+      title: 'COX\nCarbon & Climate',
+      subtitle: 'Reducing our carbon footprint through innovation and sustainable energy solutions.',
+      body: '<p>Pellentesque et nisi quis ipsum aliquam laoreet ut in elit. Vestibulum id ex magna. Proin eu pharetra eros. Sed id neque odio. Pellentesque aliquam lacus sed mi gravida, sed faucibus odio lacinia. Vestibulum a velit placerat, semper urna in, mollis libero. Suspendisse eget purus condimentum lectus maximus tempor vitae id ligula. Nunc a ornare lorem, ut placerat sapien. Cras cursus massa magna, at porttitor mauris posuere non. Fusce ac odio porttitor, aliquam purus sit amet, blandit lectus. Ut quis nunc ut lectus sodales facilisis.</p><p>Nullam felis lacus, pulvinar non faucibus vitae, elementum eu turpis. Pellentesque rhoncus pellentesque lorem, vel faucibus neque laoreet eget. Vivamus lobortis sed leo et pellentesque. Nunc sollicitudin sollicitudin venenatis. Phasellus est nibh, bibendum id arcu in, tempus dictum urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam suscipit non eros at pretium. Aliquam magna elit, mollis quis tellus ac, tempor ullamcorper lectus. Fusce at pharetra ligula, a pretium sem. Integer placerat neque vitae est venenatis congue.</p><p>Cras aliquam ac arcu eu sodales. Phasellus congue pulvinar quam, ut euismod nisl ullamcorper ut. Quisque a placerat orci. Sed ligula libero, mollis vitae dignissim interdum, pretium et ipsum. Duis eu nibh ex. Cras vitae arcu feugiat, sagittis ex vitae, consequat nisl. Donec fringilla arcu ac augue porta tempor sit amet at nisi. Pellentesque molestie justo sed nulla finibus, id placerat sem pharetra. Sed eleifend consectetur ultricies.</p><p>Donec cursus, risus ut maximus rutrum, neque erat facilisis mauris, cursus fermentum augue sem et libero. Curabitur tincidunt diam et arcu posuere lacinia a eu ipsum. Phasellus a est velit. Phasellus rutrum nulla non luctus egestas. Maecenas ut laoreet eros, a convallis augue.</p>'
+    },
+    turquoise: {
+      icon: '../assets/svg/torquois-icon.svg',
+      title: 'COX\nWater',
+      subtitle: 'Preserving and protecting our most precious natural resource for future generations.',
+      body: '<p>Pellentesque et nisi quis ipsum aliquam laoreet ut in elit. Vestibulum id ex magna. Proin eu pharetra eros. Sed id neque odio. Pellentesque aliquam lacus sed mi gravida, sed faucibus odio lacinia. Vestibulum a velit placerat, semper urna in, mollis libero. Suspendisse eget purus condimentum lectus maximus tempor vitae id ligula. Nunc a ornare lorem, ut placerat sapien. Cras cursus massa magna, at porttitor mauris posuere non. Fusce ac odio porttitor, aliquam purus sit amet, blandit lectus. Ut quis nunc ut lectus sodales facilisis.</p><p>Nullam felis lacus, pulvinar non faucibus vitae, elementum eu turpis. Pellentesque rhoncus pellentesque lorem, vel faucibus neque laoreet eget. Vivamus lobortis sed leo et pellentesque. Nunc sollicitudin sollicitudin venenatis. Phasellus est nibh, bibendum id arcu in, tempus dictum urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam suscipit non eros at pretium. Aliquam magna elit, mollis quis tellus ac, tempor ullamcorper lectus. Fusce at pharetra ligula, a pretium sem. Integer placerat neque vitae est venenatis congue.</p><p>Cras aliquam ac arcu eu sodales. Phasellus congue pulvinar quam, ut euismod nisl ullamcorper ut. Quisque a placerat orci. Sed ligula libero, mollis vitae dignissim interdum, pretium et ipsum. Duis eu nibh ex. Cras vitae arcu feugiat, sagittis ex vitae, consequat nisl. Donec fringilla arcu ac augue porta tempor sit amet at nisi. Pellentesque molestie justo sed nulla finibus, id placerat sem pharetra. Sed eleifend consectetur ultricies.</p><p>Donec cursus, risus ut maximus rutrum, neque erat facilisis mauris, cursus fermentum augue sem et libero. Curabitur tincidunt diam et arcu posuere lacinia a eu ipsum. Phasellus a est velit. Phasellus rutrum nulla non luctus egestas. Maecenas ut laoreet eros, a convallis augue.</p>'
+    },
+    green: {
+      icon: '../assets/svg/green-icon.svg',
+      title: 'COX\nCircularity & Waste',
+      subtitle: 'Embracing circular economy principles to minimize waste and maximize resource efficiency.',
+      body: '<p>Pellentesque et nisi quis ipsum aliquam laoreet ut in elit. Vestibulum id ex magna. Proin eu pharetra eros. Sed id neque odio. Pellentesque aliquam lacus sed mi gravida, sed faucibus odio lacinia. Vestibulum a velit placerat, semper urna in, mollis libero. Suspendisse eget purus condimentum lectus maximus tempor vitae id ligula. Nunc a ornare lorem, ut placerat sapien. Cras cursus massa magna, at porttitor mauris posuere non. Fusce ac odio porttitor, aliquam purus sit amet, blandit lectus. Ut quis nunc ut lectus sodales facilisis.</p><p>Nullam felis lacus, pulvinar non faucibus vitae, elementum eu turpis. Pellentesque rhoncus pellentesque lorem, vel faucibus neque laoreet eget. Vivamus lobortis sed leo et pellentesque. Nunc sollicitudin sollicitudin venenatis. Phasellus est nibh, bibendum id arcu in, tempus dictum urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam suscipit non eros at pretium. Aliquam magna elit, mollis quis tellus ac, tempor ullamcorper lectus. Fusce at pharetra ligula, a pretium sem. Integer placerat neque vitae est venenatis congue.</p><p>Cras aliquam ac arcu eu sodales. Phasellus congue pulvinar quam, ut euismod nisl ullamcorper ut. Quisque a placerat orci. Sed ligula libero, mollis vitae dignissim interdum, pretium et ipsum. Duis eu nibh ex. Cras vitae arcu feugiat, sagittis ex vitae, consequat nisl. Donec fringilla arcu ac augue porta tempor sit amet at nisi. Pellentesque molestie justo sed nulla finibus, id placerat sem pharetra. Sed eleifend consectetur ultricies.</p><p>Donec cursus, risus ut maximus rutrum, neque erat facilisis mauris, cursus fermentum augue sem et libero. Curabitur tincidunt diam et arcu posuere lacinia a eu ipsum. Phasellus a est velit. Phasellus rutrum nulla non luctus egestas. Maecenas ut laoreet eros, a convallis augue.</p>'
+    },
+    orange: {
+      icon: '../assets/svg/orange-icon.svg',
+      title: 'COX\nHabitat & Species',
+      subtitle: 'Protecting biodiversity and restoring natural habitats across our communities.',
+      body: '<p>Pellentesque et nisi quis ipsum aliquam laoreet ut in elit. Vestibulum id ex magna. Proin eu pharetra eros. Sed id neque odio. Pellentesque aliquam lacus sed mi gravida, sed faucibus odio lacinia. Vestibulum a velit placerat, semper urna in, mollis libero. Suspendisse eget purus condimentum lectus maximus tempor vitae id ligula. Nunc a ornare lorem, ut placerat sapien. Cras cursus massa magna, at porttitor mauris posuere non. Fusce ac odio porttitor, aliquam purus sit amet, blandit lectus. Ut quis nunc ut lectus sodales facilisis.</p><p>Nullam felis lacus, pulvinar non faucibus vitae, elementum eu turpis. Pellentesque rhoncus pellentesque lorem, vel faucibus neque laoreet eget. Vivamus lobortis sed leo et pellentesque. Nunc sollicitudin sollicitudin venenatis. Phasellus est nibh, bibendum id arcu in, tempus dictum urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam suscipit non eros at pretium. Aliquam magna elit, mollis quis tellus ac, tempor ullamcorper lectus. Fusce at pharetra ligula, a pretium sem. Integer placerat neque vitae est venenatis congue.</p><p>Cras aliquam ac arcu eu sodales. Phasellus congue pulvinar quam, ut euismod nisl ullamcorper ut. Quisque a placerat orci. Sed ligula libero, mollis vitae dignissim interdum, pretium et ipsum. Duis eu nibh ex. Cras vitae arcu feugiat, sagittis ex vitae, consequat nisl. Donec fringilla arcu ac augue porta tempor sit amet at nisi. Pellentesque molestie justo sed nulla finibus, id placerat sem pharetra. Sed eleifend consectetur ultricies.</p><p>Donec cursus, risus ut maximus rutrum, neque erat facilisis mauris, cursus fermentum augue sem et libero. Curabitur tincidunt diam et arcu posuere lacinia a eu ipsum. Phasellus a est velit. Phasellus rutrum nulla non luctus egestas. Maecenas ut laoreet eros, a convallis augue.</p>'
+    }
+  };
 
   // ── Initialize ──
   function init() {
@@ -27,7 +56,7 @@
     treeData.chartMode = false;
     treeData.chartTransition = 0;
     treeData.chartLabels = [];
-    treeData.windActive = false;
+    treeData.windActive = true;
     treeData.windStrength = 0;
 
     // Setup systems
@@ -35,10 +64,15 @@
     Animations.start();
     Tooltip.init();
 
+    // Cache thank-you overlay elements
+    thankYouTop = document.getElementById('thank-you-top');
+    thankYouBottom = document.getElementById('thank-you-bottom');
+    thankYouCount = document.getElementById('thank-you-count');
+    thankYouTally = document.getElementById('thank-you-tally');
+
     PledgeForm.init(function(data) {
       // Called after form submit — data = { name }
       // Create 4 pledges (one per pillar) with colored strokes from trunk base
-      exitChartMode();
 
       // Release the pending slot reservation (we'll find fresh slots for all 4)
       if (pendingSlot) {
@@ -46,7 +80,17 @@
         pendingSlot = null;
       }
 
+      // Persist entry locally
+      EntryStore.add(data.name, data.email);
+
+      // Hide all existing leaves so they can animate back in
+      if (!pledgingFromScreensaver) {
+        hideExistingLeaves();
+      }
+
       var slotsPlaced = 0;
+      var firstSlot = null;
+      var firstPledge = null;
       for (var i = 0; i < PILLARS.length; i++) {
         var slot = TreeGenerator.findAvailableSlot(treeData);
         if (!slot) break;
@@ -54,12 +98,14 @@
         var pledge = createPledge(data.name, PILLARS[i], '');
         PledgeStore.add(pledge);
 
+        if (i === 0) { firstSlot = slot; firstPledge = pledge; }
+
         // Stagger the 4 colored stroke + leaf grow animations
         (function(p, s, delay) {
           setTimeout(function() {
             Animations.animatePledge(p, s);
           }, delay);
-        })(pledge, slot, i * 400);
+        })(pledge, slot, i * 150);
 
         slotsPlaced++;
         totalPlaced++;
@@ -70,8 +116,7 @@
       updateCounter();
 
       if (slotsPlaced > 0) {
-        // Phase 1: Thank-you message appears immediately
-        showPledgeSequence(data.name);
+        showPledgeSequence(firstSlot, firstPledge);
       } else {
         showThankYou('The tree is fully grown!');
       }
@@ -91,10 +136,52 @@
     treeData.screensaverMode = false;
     treeData.screensaverTransition = 0;
 
+    // Wire about page
+    var ssAbout = document.getElementById('ss-about');
+    if (ssAbout) {
+      ssAbout.addEventListener('click', function() {
+        var idx = getActiveScreensaverPillarIndex();
+        openAbout(PILLAR_KEYS[idx]);
+      });
+    }
+    var aboutBackBtn = document.getElementById('about-back-btn');
+    if (aboutBackBtn) {
+      aboutBackBtn.addEventListener('click', function() {
+        closeAbout();
+      });
+    }
+
     wireCanvasEvents();
     wireControls();
+    wireNavControls();
     wireResize();
+
+    // Load persisted entries from localStorage
+    EntryStore.load();
+
+    // Seed 10 pledges on load (appear instantly, no animation)
+    for (var si = 0; si < 40; si++) {
+      var seedPledge = generateRandomPledge();
+      PledgeStore.add(seedPledge);
+      var seedSlot = TreeGenerator.findAvailableSlot(treeData);
+      if (seedSlot) {
+        seedSlot.occupied = true;
+        seedSlot.leaf = seedPledge;
+        seedSlot.rotation = (Math.random() - 0.5) * 1.2;
+        seedPledge.slotId = seedSlot.id;
+        totalPlaced++;
+      }
+    }
+    totalPeople = 3 + EntryStore.count(); // seed + previously saved entries
+
     updateCounter();
+
+    // Start idle timer — activate screensaver after 1 minute of no interaction
+    var frame = document.getElementById('app-frame');
+    ['click', 'touchstart', 'mousemove'].forEach(function(evt) {
+      frame.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
+    resetIdleTimer();
   }
 
   // ── Hide/restore/reveal helpers for screensaver→pledge flow ──
@@ -119,72 +206,89 @@
   }
 
   function revealHiddenLeaves() {
-    if (hiddenSlots.length === 0) return;
+    var count = hiddenSlots.length;
+    if (count === 0) return 0;
     treeData.activeBranches = Math.min(5, Math.max(treeData.activeBranches, 3));
-    var stagger = Math.max(10, Math.min(60, 3000 / hiddenSlots.length));
-    for (var i = 0; i < hiddenSlots.length; i++) {
-      (function(item, delay) {
+
+    // Sublinear total stagger: scales with sqrt(count) so large counts
+    // don't take forever (~2.4s for 40, ~4.4s for 500, ~6.4s for 2000)
+    var totalStagger = count <= 1 ? 0
+      : Math.min(89 * Math.sqrt(count) + 2400, (count - 1) * 60);
+
+    for (var i = 0; i < count; i++) {
+      // Sqrt curve: first leaves arrive gracefully, pace builds up
+      var t = count <= 1 ? 0 : i / (count - 1);
+      var delay = totalStagger * Math.sqrt(t);
+      (function(item, d) {
         setTimeout(function() {
           Animations.animateLeafGrow(item.pledge, item.slot);
-        }, delay);
-      })(hiddenSlots[i], i * stagger);
+        }, d);
+      })(hiddenSlots[i], delay);
     }
+
+    var totalDuration = totalStagger + 600;
     hiddenSlots = [];
+    return totalDuration;
   }
 
-  // ── Thank-you sequence with dynamic tally ──
-  function showPledgeSequence(name) {
+  // ── Thank-you sequence — leaves first, then tooltip, then overlays ──
+  function showPledgeSequence(tooltipSlot, tooltipPledge) {
     if (thankYouTimer) {
       clearTimeout(thankYouTimer);
       thankYouTimer = null;
     }
 
     var btnPledge = document.getElementById('btn-pledge');
+    var ctaText = document.getElementById('cta-text');
     btnPledge.style.opacity = '0';
     btnPledge.style.pointerEvents = 'none';
+    ctaText.style.opacity = '0';
 
-    var previousPeople = totalPeople - 1;
+    // Populate bottom tally
+    thankYouCount.textContent = totalPeople.toString();
 
-    function finish() {
-      thankYou.style.opacity = '0';
+    // Reveal all hidden leaves with grow animation
+    var revealDuration = revealHiddenLeaves();
+
+    // New pledge anims: last starts at 3*150=450ms, stroke 500ms + grow 600ms = 1550ms
+    var newPledgeDuration = 3 * 150 + 500 + 600;
+    // Wait for whichever finishes last, shorten by 20%
+    var allLeavesDone = Math.max(revealDuration, newPledgeDuration) * 0.8;
+
+    // Phase 1: all leaves animate in
+    // Phase 2: tooltip appears after leaves are done
+    // Phase 3: thank-you overlays fade in after tooltip
+    thankYouTimer = setTimeout(function() {
+      // Show tooltip on the first pledge leaf
+      if (tooltipSlot && tooltipPledge) {
+        var sp = Renderer.toScreen(tooltipSlot.x, tooltipSlot.y);
+        Tooltip.show(sp.x, sp.y, tooltipPledge, 6400);
+      }
+
+      // Show thank-you overlays shortly after tooltip
       thankYouTimer = setTimeout(function() {
-        thankYou.classList.add('hidden');
-        thankYouTimer = null;
-        btnPledge.style.opacity = '';
-        btnPledge.style.pointerEvents = '';
-        pledgingFromScreensaver = false;
-      }, 1000);
-    }
+        thankYouTop.classList.remove('hidden');
+        thankYouTop.style.opacity = '1';
 
-    thankYou.classList.remove('hidden');
+        thankYouBottom.classList.remove('hidden');
+        thankYouBottom.style.opacity = '1';
 
-    if (previousPeople === 0) {
-      // First person ever
-      thankYouText.textContent = 'Congrats, you\'re the first person to pledge!';
-      thankYou.style.opacity = '1';
-      thankYouTimer = setTimeout(finish, 5000);
-    } else {
-      // Phase 1: Personal thank-you
-      thankYouText.textContent = 'Thank you for pledging.';
-      thankYou.style.opacity = '1';
-
-      thankYouTimer = setTimeout(function() {
-        // Crossfade
-        thankYou.style.opacity = '0';
-
+        // Hold for 8 seconds after appearing, then fade out
         thankYouTimer = setTimeout(function() {
-          // Phase 2: Tally + bloom wave (if from screensaver)
-          thankYouText.textContent = totalPeople + ' people have also taken the pledge.';
-          thankYou.style.opacity = '1';
-
-          if (pledgingFromScreensaver) {
-            revealHiddenLeaves();
-          }
-
-          thankYouTimer = setTimeout(finish, 5500);
-        }, 800);
-      }, 3500);
-    }
+          thankYouTop.style.opacity = '0';
+          thankYouBottom.style.opacity = '0';
+          thankYouTimer = setTimeout(function() {
+            thankYouTop.classList.add('hidden');
+            thankYouBottom.classList.add('hidden');
+            thankYouTimer = null;
+            btnPledge.style.opacity = '';
+            btnPledge.style.pointerEvents = '';
+            ctaText.style.opacity = '';
+            pledgingFromScreensaver = false;
+          }, 800);
+        }, 6400);
+      }, 640);
+    }, allLeavesDone);
   }
 
   // ── Canvas click/touch -> leaf tooltip or open form ──
@@ -193,6 +297,7 @@
 
     function handleInteraction(clientX, clientY) {
       if (PledgeForm.isOpen()) return;
+      if (isAboutOpen()) return;
       if (treeData.chartMode) return;
       if (pendingSlot) return; // stroke animation in progress
 
@@ -216,6 +321,7 @@
       }
 
       if (hitSlot && hitSlot.leaf) {
+        hitSlot.flutterStart = performance.now() / 1000;
         var screenPos = Renderer.toScreen(hitSlot.x, hitSlot.y);
         Tooltip.show(screenPos.x, screenPos.y, hitSlot.leaf);
       } else if (Tooltip.isVisible()) {
@@ -264,18 +370,12 @@
   function wireControls() {
     var btn1x = document.getElementById('btn-1x');
     var btn10x = document.getElementById('btn-10x');
-    var btnChart = document.getElementById('btn-chart');
-
     btn1x.addEventListener('click', function() {
       addSingleAnimatedPledge();
     });
 
     btn10x.addEventListener('click', function() {
       addBulkPledges(100);
-    });
-
-    btnChart.addEventListener('click', function() {
-      toggleChart();
     });
 
     var btnWind = document.getElementById('btn-wind');
@@ -393,127 +493,6 @@
     }
   }
 
-  // ── Chart toggle ──
-  function exitChartMode() {
-    if (treeData.chartMode) {
-      treeData.chartMode = false;
-      document.getElementById('btn-chart').classList.remove('active');
-      ctaText.style.opacity = '1';
-    }
-  }
-
-  function toggleChart() {
-    treeData.chartMode = !treeData.chartMode;
-    var btnChart = document.getElementById('btn-chart');
-    if (treeData.chartMode) {
-      computeChartLayout();
-      btnChart.classList.add('active');
-      ctaText.style.opacity = '0';
-    } else {
-      btnChart.classList.remove('active');
-      ctaText.style.opacity = '1';
-    }
-  }
-
-  function computeChartLayout() {
-    var centerX = 500;
-    var centerY = 500;
-
-    // Group occupied slots by pillar
-    var groups = [];
-    for (var p = 0; p < PILLARS.length; p++) {
-      groups.push({ pillar: PILLARS[p], slots: [] });
-    }
-
-    for (var i = 0; i < treeData.leafSlots.length; i++) {
-      var slot = treeData.leafSlots[i];
-      if (!slot.occupied || !slot.leaf) continue;
-      for (var g = 0; g < groups.length; g++) {
-        if (groups[g].pillar.id === slot.leaf.pillar.id) {
-          groups[g].slots.push(slot);
-          break;
-        }
-      }
-    }
-
-    var totalOccupied = 0;
-    for (var g = 0; g < groups.length; g++) {
-      totalOccupied += groups[g].slots.length;
-    }
-
-    if (totalOccupied === 0) return;
-
-    // Filter to active groups
-    var activeGroups = [];
-    for (var g = 0; g < groups.length; g++) {
-      if (groups[g].slots.length > 0) activeGroups.push(groups[g]);
-    }
-
-    // Cluster centers spread around the canvas organically
-    var clusterCenters = [
-      { x: 300, y: 350 },
-      { x: 700, y: 350 },
-      { x: 300, y: 650 },
-      { x: 700, y: 650 }
-    ];
-
-    // Adaptive leaf spacing based on count
-    var spacing;
-    if (totalOccupied > 5000) {
-      spacing = 7;
-    } else if (totalOccupied > 2000) {
-      spacing = 9;
-    } else if (totalOccupied > 500) {
-      spacing = 13;
-    } else if (totalOccupied > 100) {
-      spacing = 18;
-    } else {
-      spacing = 24;
-    }
-
-    // Use seeded random for stable layout
-    var chartRng = new SeededRandom(7);
-
-    treeData.chartLabels = [];
-
-    for (var gi = 0; gi < activeGroups.length; gi++) {
-      var group = activeGroups[gi];
-      var cx = clusterCenters[gi % clusterCenters.length].x;
-      var cy = clusterCenters[gi % clusterCenters.length].y;
-
-      // Place leaves in an organic spiral with jitter
-      var leafIdx = 0;
-      var angle = chartRng.next() * Math.PI * 2;
-      var radius = 0;
-      var maxR = 0;
-
-      while (leafIdx < group.slots.length) {
-        var jitterR = chartRng.range(-spacing * 0.3, spacing * 0.3);
-        var jitterA = chartRng.range(-0.3, 0.3);
-        var lx = cx + Math.cos(angle + jitterA) * (radius + jitterR);
-        var ly = cy + Math.sin(angle + jitterA) * (radius + jitterR);
-
-        group.slots[leafIdx].chartX = lx;
-        group.slots[leafIdx].chartY = ly;
-
-        if (radius + jitterR > maxR) maxR = radius + jitterR;
-        leafIdx++;
-
-        // Advance along a loose spiral
-        angle += spacing / Math.max(radius, spacing) * 1.2;
-        radius += spacing / (Math.PI * 2) * (spacing / Math.max(radius, spacing)) * 3;
-      }
-
-      treeData.chartLabels.push({
-        pillar: group.pillar,
-        cx: cx,
-        cy: cy,
-        radius: Math.max(maxR, 30),
-        count: group.slots.length
-      });
-    }
-  }
-
   function updateCounter() {
     var btn1x = document.getElementById('btn-1x');
     var btn10x = document.getElementById('btn-10x');
@@ -526,20 +505,21 @@
     }
   }
 
-  // ── Simple thank you overlay (for dev buttons / tree full) ──
+  // ── Simple status overlay (for dev buttons / tree full) ──
   function showThankYou(text) {
     if (thankYouTimer) {
       clearTimeout(thankYouTimer);
       thankYouTimer = null;
     }
-    thankYouText.textContent = text;
-    thankYou.classList.remove('hidden');
-    thankYou.style.opacity = '1';
+    thankYouCount.textContent = text;
+    thankYouTally.textContent = '';
+    thankYouBottom.classList.remove('hidden');
+    thankYouBottom.style.opacity = '1';
 
     thankYouTimer = setTimeout(function() {
-      thankYou.style.opacity = '0';
+      thankYouBottom.style.opacity = '0';
       thankYouTimer = setTimeout(function() {
-        thankYou.classList.add('hidden');
+        thankYouBottom.classList.add('hidden');
         thankYouTimer = null;
       }, 600);
     }, 2000);
@@ -552,9 +532,51 @@
     }, 200));
   }
 
+  // ── About page ──
+  function getActiveScreensaverPillarIndex() {
+    if (!treeData || !treeData.screensaverMode || !treeData.ssStartTime) return 0;
+    var elapsed = performance.now() / 1000 - treeData.ssStartTime;
+    var cycleTime = elapsed - 5; // first 5s = blue
+    if (cycleTime <= 0) return 0;
+    var SS_HOLD = 5, SS_FADE = 2, SS_CYCLE = SS_HOLD + SS_FADE;
+    var totalLen = 4 * SS_CYCLE;
+    var pos = cycleTime % totalLen;
+    return Math.floor(pos / SS_CYCLE) % 4;
+  }
+
+  function openAbout(pillarKey) {
+    var content = ABOUT_CONTENT[pillarKey];
+    if (!content) return;
+    document.getElementById('about-pillar-icon').src = content.icon;
+    document.getElementById('about-title').textContent = content.title;
+    document.getElementById('about-subtitle').textContent = content.subtitle;
+    document.getElementById('about-body').innerHTML = content.body;
+    document.getElementById('about-modal').classList.remove('hidden');
+    document.body.classList.add('about-open');
+  }
+
+  function closeAbout() {
+    document.getElementById('about-modal').classList.add('hidden');
+    document.body.classList.remove('about-open');
+  }
+
+  function isAboutOpen() {
+    return !document.getElementById('about-modal').classList.contains('hidden');
+  }
+
+  function resetIdleTimer() {
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(function() {
+      if (treeData && !treeData.screensaverMode && !PledgeForm.isOpen() && !isAboutOpen()) {
+        enterScreensaver();
+      }
+    }, IDLE_TIMEOUT);
+  }
+
   function enterScreensaver() {
     if (!treeData) return;
     if (PledgeForm.isOpen()) return;
+    if (isAboutOpen()) closeAbout();
     if (treeData.chartMode) exitChartMode();
 
     treeData.screensaverMode = true;
@@ -569,6 +591,14 @@
     document.body.classList.remove('screensaver-active');
     var btnSS = document.getElementById('btn-screensaver');
     if (btnSS) btnSS.classList.remove('active');
+    // Clear dynamic button styles from screensaver cycling
+    var btnPledge = document.getElementById('btn-pledge');
+    if (btnPledge) {
+      btnPledge.style.background = '';
+      btnPledge.style.borderColor = '';
+      btnPledge.style.boxShadow = '';
+    }
+    resetIdleTimer();
   }
 
   function computeScreensaverLayout() {
@@ -722,6 +752,106 @@
         width: rng.range(0.5, 1.5)
       });
     }
+  }
+
+  // ── Chart mode helpers ──
+  function exitChartMode() {
+    if (!treeData) return;
+    treeData.chartMode = false;
+  }
+
+  function enterChartMode() {
+    if (!treeData) return;
+    if (treeData.screensaverMode) exitScreensaver();
+    if (PledgeForm.isOpen()) PledgeForm.close();
+    treeData.chartMode = true;
+  }
+
+  // ── Page/state navigation ──
+  function wireNavControls() {
+    var navBtns = document.querySelectorAll('.nav-btn');
+    var allBtns = Array.prototype.slice.call(navBtns);
+
+    function setActive(state) {
+      allBtns.forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-state') === state);
+      });
+    }
+
+    allBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var state = btn.getAttribute('data-state');
+        setActive(state);
+
+        // Reset everything first
+        if (isAboutOpen()) closeAbout();
+        if (treeData.screensaverMode) exitScreensaver();
+        if (PledgeForm.isOpen()) PledgeForm.close();
+        if (treeData.chartMode) exitChartMode();
+        if (thankYouTimer) {
+          clearTimeout(thankYouTimer);
+          thankYouTimer = null;
+        }
+        thankYouTop.classList.add('hidden');
+        thankYouTop.style.opacity = '0';
+        thankYouBottom.classList.add('hidden');
+        thankYouBottom.style.opacity = '0';
+        var btnPledge = document.getElementById('btn-pledge');
+        var ctaText = document.getElementById('cta-text');
+        btnPledge.style.opacity = '';
+        btnPledge.style.pointerEvents = '';
+        ctaText.style.opacity = '';
+
+        // Then enter the requested state
+        switch (state) {
+          case 'tree':
+            // Already reset to tree above
+            break;
+          case 'form':
+            PledgeForm.open();
+            break;
+          case 'screensaver':
+            enterScreensaver();
+            break;
+          case 'thankyou':
+            // Simulate full post-submit animation: hide leaves, animate 4 new
+            // pledges in with tooltip, then reveal everything with thank-you overlays
+            hideExistingLeaves();
+
+            var demoName = DUMMY_NAMES[Math.floor(Math.random() * DUMMY_NAMES.length)];
+            var demoFirstSlot = null;
+            var demoFirstPledge = null;
+            for (var pi = 0; pi < PILLARS.length; pi++) {
+              var demoSlot = TreeGenerator.findAvailableSlot(treeData);
+              if (!demoSlot) break;
+
+              var demoPledge = createPledge(demoName, PILLARS[pi], '');
+              PledgeStore.add(demoPledge);
+
+              if (pi === 0) { demoFirstSlot = demoSlot; demoFirstPledge = demoPledge; }
+
+              (function(p, s, delay) {
+                setTimeout(function() {
+                  Animations.animatePledge(p, s);
+                }, delay);
+              })(demoPledge, demoSlot, pi * 150);
+
+              totalPlaced++;
+            }
+            totalPeople++;
+            checkBranchGrowth();
+            updateCounter();
+            showPledgeSequence(demoFirstSlot, demoFirstPledge);
+            break;
+          case 'about':
+            openAbout(PILLAR_KEYS[0]);
+            break;
+          case 'chart':
+            enterChartMode();
+            break;
+        }
+      });
+    });
   }
 
   // ── Boot ──
