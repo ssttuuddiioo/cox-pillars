@@ -135,14 +135,14 @@
       <span class="ss-header-title">Carbon &amp; Climate</span>
       <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
     </div>
-    <div class="ss-pillar-block" id="ss-block-turquoise">
-      <img class="ss-header-icon" src="../assets/svg/torquois-icon.svg" alt="">
-      <span class="ss-header-title">Water</span>
-      <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
-    </div>
     <div class="ss-pillar-block" id="ss-block-green">
       <img class="ss-header-icon" src="../assets/svg/green-icon.svg" alt="">
       <span class="ss-header-title">Circularity &amp; Waste</span>
+      <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+    </div>
+    <div class="ss-pillar-block" id="ss-block-turquoise">
+      <img class="ss-header-icon" src="../assets/svg/torquois-icon.svg" alt="">
+      <span class="ss-header-title">Water</span>
       <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
     </div>
     <div class="ss-pillar-block" id="ss-block-orange">
@@ -150,13 +150,23 @@
       <span class="ss-header-title">Habitat &amp; Species</span>
       <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
     </div>
+    <div class="ss-pillar-block" id="ss-block-tree">
+      <span class="ss-header-title">Cox Conserves</span>
+      <p class="ss-header-blurb">Growing together for a more sustainable future</p>
+    </div>
+  </div>
+
+  <!-- Screensaver pledge count -->
+  <div id="ss-pledge-count">
+    <p id="ss-count-number"></p>
+    <p id="ss-count-tally">people have also taken<br>the pledge.</p>
   </div>
 
   <!-- Screensaver pillar SVG overlays -->
   <div id="ss-overlays">
     <img id="ss-svg-blue" src="../assets/svg/blue.svg" alt="">
-    <img id="ss-svg-turquoise" src="../assets/svg/torquois.svg" alt="">
     <img id="ss-svg-green" src="../assets/svg/green.svg" alt="">
+    <canvas id="ss-svg-turquoise"></canvas>
     <img id="ss-svg-orange" src="../assets/svg/orange.svg" alt="">
   </div>
 
@@ -192,6 +202,11 @@
     <button class="nav-btn" data-state="screensaver">Screensaver</button>
     <button class="nav-btn" data-state="thankyou">Thank You</button>
     <button class="nav-btn" data-state="about">About</button>
+    <span class="nav-label">PILLARS</span>
+    <button class="nav-btn" data-state="pillar-1">1</button>
+    <button class="nav-btn" data-state="pillar-2">2</button>
+    <button class="nav-btn" data-state="pillar-3">3</button>
+    <button class="nav-btn" data-state="pillar-4">4</button>
   </div>
 </div>
 
@@ -204,6 +219,7 @@
   <script src="js/keyboard.js" defer></script>
   <script src="js/form.js" defer></script>
   <script src="js/tooltip.js" defer></script>
+  <script src="js/ripple.js" defer></script>
   <script src="js/main.js" defer></script>
 </body>
 </html>

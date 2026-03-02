@@ -54,24 +54,45 @@ var Animations = (function() {
       }
     }
 
+    // Animate ssTreePhase (ramps up when pillar index = 4, down otherwise)
+    if (treeData && treeData.screensaverMode && treeData.ssStartTime) {
+      if (treeData.ssTreePhase === undefined) treeData.ssTreePhase = 0;
+      var tpElapsed = time - treeData.ssStartTime;
+      var tpCycleTime = tpElapsed - 5;
+      var ssTreeTarget = 0;
+      if (tpCycleTime > 0) {
+        var TP_CYCLE = 7; // 5s hold + 2s fade
+        var tpPos = tpCycleTime % (5 * TP_CYCLE);
+        var tpActiveIdx = Math.floor(tpPos / TP_CYCLE) % 5;
+        if (tpActiveIdx === 4) ssTreeTarget = 1;
+      }
+      if (treeData.ssTreePhase < ssTreeTarget) {
+        treeData.ssTreePhase = Math.min(ssTreeTarget, treeData.ssTreePhase + 0.015);
+      } else if (treeData.ssTreePhase > ssTreeTarget) {
+        treeData.ssTreePhase = Math.max(ssTreeTarget, treeData.ssTreePhase - 0.020);
+      }
+    }
+
     // Sync screensaver SVG overlays and titles with palette cycling
     if (treeData && treeData.screensaverMode && treeData.ssStartTime) {
       var ssElapsed = time - treeData.ssStartTime;
       var ssSvgs = [
         document.getElementById('ss-svg-blue'),
-        document.getElementById('ss-svg-turquoise'),
         document.getElementById('ss-svg-green'),
+        document.getElementById('ss-svg-turquoise'),
         document.getElementById('ss-svg-orange')
       ];
       var ssBlocks = [
         document.getElementById('ss-block-blue'),
-        document.getElementById('ss-block-turquoise'),
         document.getElementById('ss-block-green'),
-        document.getElementById('ss-block-orange')
+        document.getElementById('ss-block-turquoise'),
+        document.getElementById('ss-block-orange'),
+        document.getElementById('ss-block-tree')
       ];
       var SS_SVG_HOLD = 5;
       var SS_SVG_FADE = 2;
       var SS_SVG_CYCLE = SS_SVG_HOLD + SS_SVG_FADE;
+      var SS_PHASE_COUNT = 5;
 
       // First 5 seconds: show blue
       var cycleTime = ssElapsed - 5;
@@ -79,33 +100,72 @@ var Animations = (function() {
       var fadeOut = false;
       var withinSlot = 0;
       if (cycleTime > 0) {
-        var totalLen = ssSvgs.length * SS_SVG_CYCLE;
+        var totalLen = SS_PHASE_COUNT * SS_SVG_CYCLE;
         var pos = cycleTime % totalLen;
-        activeIdx = Math.floor(pos / SS_SVG_CYCLE) % ssSvgs.length;
+        activeIdx = Math.floor(pos / SS_SVG_CYCLE) % SS_PHASE_COUNT;
         withinSlot = pos - activeIdx * SS_SVG_CYCLE;
         fadeOut = withinSlot > SS_SVG_HOLD;
       }
 
+      // SVG overlays (only 4 — tree phase has none)
       for (var si = 0; si < ssSvgs.length; si++) {
-        var svgOpacity, blockOpacity;
-        if (si === activeIdx) {
-          svgOpacity = fadeOut ? '0' : '1';
-          blockOpacity = svgOpacity;
-        } else {
-          var nextIdx = (activeIdx + 1) % ssSvgs.length;
-          svgOpacity = (si === nextIdx && fadeOut) ? '1' : '0';
-          blockOpacity = svgOpacity;
+        var svgOpacity = 0;
+        if (activeIdx < 4 && si === activeIdx) {
+          if (fadeOut) {
+            var nextIdx = (activeIdx + 1) % SS_PHASE_COUNT;
+            if (nextIdx === 4) {
+              // Fading into tree phase — smoothly fade out current SVG
+              svgOpacity = 1 - (withinSlot - SS_SVG_HOLD) / SS_SVG_FADE;
+            } else {
+              svgOpacity = 0;
+            }
+          } else {
+            svgOpacity = 1;
+          }
+        } else if (activeIdx < 4 && fadeOut) {
+          var nextIdx = (activeIdx + 1) % SS_PHASE_COUNT;
+          if (nextIdx < 4 && si === nextIdx) svgOpacity = 1;
+        } else if (activeIdx === 4 && fadeOut && si === 0) {
+          // Tree fading into Blue — fade blue SVG in
+          svgOpacity = (withinSlot - SS_SVG_HOLD) / SS_SVG_FADE;
         }
-        if (ssSvgs[si]) ssSvgs[si].style.opacity = svgOpacity;
-        if (ssBlocks[si]) ssBlocks[si].style.opacity = blockOpacity;
+        if (ssSvgs[si]) ssSvgs[si].style.opacity = String(svgOpacity);
+      }
+
+      // Header blocks (5 — includes tree block)
+      for (var si = 0; si < ssBlocks.length; si++) {
+        var blockOpacity = 0;
+        if (si === activeIdx) {
+          if (fadeOut) {
+            var nextIdx = (activeIdx + 1) % SS_PHASE_COUNT;
+            // Smoothly fade out into tree or from tree
+            blockOpacity = 1 - (withinSlot - SS_SVG_HOLD) / SS_SVG_FADE;
+          } else {
+            blockOpacity = 1;
+          }
+        } else if (fadeOut) {
+          var nextIdx = (activeIdx + 1) % SS_PHASE_COUNT;
+          if (si === nextIdx) {
+            blockOpacity = (withinSlot - SS_SVG_HOLD) / SS_SVG_FADE;
+          }
+        }
+        if (ssBlocks[si]) ssBlocks[si].style.opacity = String(blockOpacity);
+      }
+
+      // Hide ABOUT link during tree phase
+      var ssAboutEl = document.getElementById('ss-about');
+      if (ssAboutEl) {
+        ssAboutEl.style.opacity = (activeIdx === 4 && !fadeOut) ? '0' : '';
+        ssAboutEl.style.pointerEvents = (activeIdx === 4 && !fadeOut) ? 'none' : '';
       }
 
       // Cycle background color per pillar
       var SS_BG = [
         [12, 22, 38],   // Blue/Carbon & Climate: #0C1626
+        [14, 60, 27],   // Green: #0E3C1B
         [22, 48, 45],   // Turquoise: dark teal
-        [42, 85, 22],   // Green: dark forest
-        [52, 18, 12]    // Orange: dark brown
+        [52, 18, 12],   // Orange: dark brown
+        [1, 69, 24]     // Tree: #014518
       ];
       var bgR, bgG, bgB;
       if (fadeOut) {
@@ -124,7 +184,7 @@ var Animations = (function() {
       // Dynamic button color cycling to match active pillar
       var btnPledge = document.getElementById('btn-pledge');
       if (btnPledge) {
-        var SS_BTN_COLORS = ['#2952CC', '#1A8A8A', '#2E7D32', '#D84315'];
+        var SS_BTN_COLORS = ['#0043D5', '#468E00', '#00CFE3', '#FF6121', '#468E00'];
         var btnColor = SS_BTN_COLORS[activeIdx];
         if (fadeOut) {
           var nxtBtn = (activeIdx + 1) % SS_BTN_COLORS.length;
@@ -155,7 +215,9 @@ var Animations = (function() {
 
     var chartT = treeData ? (treeData.chartTransition || 0) : 0;
     var ssT = treeData ? (treeData.screensaverTransition || 0) : 0;
-    var treeAlpha = 1 - Math.max(chartT, ssT);
+    var ssTreePhaseVal = treeData ? (treeData.ssTreePhase || 0) : 0;
+    var effectiveSS = ssT * (1 - ssTreePhaseVal);
+    var treeAlpha = 1 - Math.max(chartT, effectiveSS);
 
     Renderer.clear();
 
@@ -325,6 +387,16 @@ var Animations = (function() {
     addAnimation(growAnim);
   }
 
+  // Jump screensaver to a specific pillar (0-3)
+  function jumpToPillar(pillarIndex) {
+    if (!treeData) return;
+    // Offset ssStartTime so elapsed time lands on the target pillar
+    // Cycle: 5s initial hold, then 7s per pillar (5s hold + 2s fade)
+    var now = performance.now() / 1000;
+    var targetElapsed = 5 + pillarIndex * 7 + 0.1;
+    treeData.ssStartTime = now - targetElapsed;
+  }
+
   return {
     setTreeData: setTreeData,
     start: start,
@@ -333,6 +405,7 @@ var Animations = (function() {
     animatePledge: animatePledge,
     animateStrokeToSlot: animateStrokeToSlot,
     animateLeafGrow: animateLeafGrow,
+    jumpToPillar: jumpToPillar,
     BranchStrokeAnim: BranchStrokeAnim,
     LeafGrowAnim: LeafGrowAnim
   };

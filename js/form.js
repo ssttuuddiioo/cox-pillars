@@ -101,17 +101,7 @@ var PledgeForm = (function() {
   function initKeyboard() {
     var kbContainer = document.getElementById('keyboard-container');
     Keyboard.init(kbContainer, function(action) {
-      if (action === 'return') {
-        // If on name input, move to message
-        if (nameInput.classList.contains('active')) {
-          Keyboard.setActiveInput(messageInput);
-        } else {
-          // On message input, try submit
-          if (!submitBtn.disabled) {
-            handleSubmit();
-          }
-        }
-      } else if (action === 'input') {
+      if (action === 'input') {
         validate();
       }
     });

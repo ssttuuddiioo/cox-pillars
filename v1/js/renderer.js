@@ -339,9 +339,10 @@ var Renderer = (function() {
   // ── Color palettes for screensaver cycling ──
   var SS_PALETTES = [
     ['#1a3366', '#2d6bc4', '#7ab5eb'],  // Blues — Climate & Carbon
-    ['#0d4f5a', '#1a9aaa', '#5ccedd'],  // Turquoise — Water
     ['#1e5c1e', '#48af4c', '#80d248'],  // Greens — Circularity & Recycling
+    ['#0d4f5a', '#1a9aaa', '#5ccedd'],  // Turquoise — Water
     ['#8b2f1a', '#e05a2b', '#f4a68a'],  // Oranges — Habitat & Species
+    ['#1a3366', '#2d6bc4', '#7ab5eb'],  // Tree phase (matches blue, not visible)
   ];
   var SS_HOLD = 5;   // seconds to hold each palette
   var SS_FADE = 2;   // seconds to crossfade between palettes
@@ -379,7 +380,9 @@ var Renderer = (function() {
     chartT = chartT || 0;
     ssT = ssT || 0;
     var easedChart = easeInOutQuad(chartT);
-    var easedSS = easeInOutQuad(ssT);
+    var rawEasedSS = easeInOutQuad(ssT);
+    var ssTreePhaseVal = (treeDataRef && treeDataRef.ssTreePhase) || 0;
+    var easedSS = rawEasedSS * (1 - easeInOutQuad(ssTreePhaseVal));
 
     // Use depth-sorted slots throughout the entire screensaver transition
     // to avoid draw-order pop at the old 0.5 threshold

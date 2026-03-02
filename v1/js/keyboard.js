@@ -6,20 +6,19 @@ var Keyboard = (function() {
   var activeInput = null;
   var isShifted = false;
   var onInputChange = null; // callback
-  var returnLabel = 'Submit';
 
   var ROWS = [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
     ['shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'backspace'],
-    ['123', 'space', 'return']
+    ['123', 'space']
   ];
 
   var NUM_ROWS = [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
     ['-', '/', ':', ';', '(', ')', '$', '&', '@', '"'],
     ['#+=', '.', ',', '?', '!', "'", 'backspace'],
-    ['ABC', 'space', 'return']
+    ['ABC', 'space']
   ];
 
   var isNumMode = false;
@@ -52,10 +51,6 @@ var Keyboard = (function() {
           btn.className += ' wide';
           btn.innerHTML = '&#9003;';
           btn.setAttribute('data-key', 'backspace');
-        } else if (key === 'return') {
-          btn.className += ' return-key';
-          btn.textContent = returnLabel;
-          btn.setAttribute('data-key', 'return');
         } else if (key === 'shift') {
           btn.className += ' wide';
           btn.innerHTML = '&#8679;';
@@ -98,9 +93,6 @@ var Keyboard = (function() {
       insertChar(' ');
     } else if (key === 'backspace') {
       deleteChar();
-    } else if (key === 'return') {
-      // Move to next input or close
-      if (onInputChange) onInputChange('return');
     } else if (key === 'shift') {
       isShifted = !isShifted;
       render();
@@ -176,18 +168,12 @@ var Keyboard = (function() {
     return container.classList.contains('open');
   }
 
-  function setReturnLabel(label) {
-    returnLabel = label || 'Submit';
-    render();
-  }
-
   return {
     init: init,
     show: show,
     hide: hide,
     isOpen: isOpen,
     setActiveInput: setActiveInput,
-    setReturnLabel: setReturnLabel,
     render: render
   };
 })();

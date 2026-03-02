@@ -6,6 +6,7 @@
   var treeData;
   var canvas;
   var thankYouTop, thankYouBottom, thankYouCount, thankYouTally;
+  var ssPledgeCount, ssCountNumber;
   var totalPlaced = 0;
   var totalPeople = 0;
   var MAX_PLEDGES = 5000;
@@ -18,7 +19,7 @@
   var IDLE_TIMEOUT = 60000; // 1 minute
 
   // ── About page content per pillar ──
-  var PILLAR_KEYS = ['blue', 'turquoise', 'green', 'orange'];
+  var PILLAR_KEYS = ['blue', 'green', 'turquoise', 'orange'];
   var ABOUT_CONTENT = {
     blue: {
       icon: '../assets/svg/blue-icon.svg',
@@ -63,12 +64,17 @@
     Animations.setTreeData(treeData);
     Animations.start();
     Tooltip.init();
+    RippleAnim.init();
 
     // Cache thank-you overlay elements
     thankYouTop = document.getElementById('thank-you-top');
     thankYouBottom = document.getElementById('thank-you-bottom');
     thankYouCount = document.getElementById('thank-you-count');
     thankYouTally = document.getElementById('thank-you-tally');
+
+    // Cache screensaver pledge count elements
+    ssPledgeCount = document.getElementById('ss-pledge-count');
+    ssCountNumber = document.getElementById('ss-count-number');
 
     PledgeForm.init(function(data) {
       // Called after form submit — data = { name }
@@ -141,7 +147,9 @@
     if (ssAbout) {
       ssAbout.addEventListener('click', function() {
         var idx = getActiveScreensaverPillarIndex();
-        openAbout(PILLAR_KEYS[idx]);
+        if (idx < PILLAR_KEYS.length) {
+          openAbout(PILLAR_KEYS[idx]);
+        }
       });
     }
     var aboutBackBtn = document.getElementById('about-back-btn');
@@ -503,6 +511,7 @@
     } else {
       btn10x.textContent = '+100';
     }
+    if (ssCountNumber) ssCountNumber.textContent = totalPeople.toString();
   }
 
   // ── Simple status overlay (for dev buttons / tree full) ──
@@ -539,9 +548,9 @@
     var cycleTime = elapsed - 5; // first 5s = blue
     if (cycleTime <= 0) return 0;
     var SS_HOLD = 5, SS_FADE = 2, SS_CYCLE = SS_HOLD + SS_FADE;
-    var totalLen = 4 * SS_CYCLE;
+    var totalLen = 5 * SS_CYCLE;
     var pos = cycleTime % totalLen;
-    return Math.floor(pos / SS_CYCLE) % 4;
+    return Math.floor(pos / SS_CYCLE) % 5;
   }
 
   function openAbout(pillarKey) {
@@ -581,8 +590,10 @@
 
     treeData.screensaverMode = true;
     treeData.ssStartTime = performance.now() / 1000;
+    treeData.ssTreePhase = 0;
     computeScreensaverLayout();
     document.body.classList.add('screensaver-active');
+
   }
 
   function exitScreensaver() {
@@ -604,7 +615,7 @@
   function computeScreensaverLayout() {
     var rng = new SeededRandom(13);
     var centerX = 500;
-    var centerY = 470;
+    var centerY = 570;
     var SS_LEAF_COUNT = 200;
 
     // 3 blue shades
@@ -845,6 +856,22 @@
             break;
           case 'about':
             openAbout(PILLAR_KEYS[0]);
+            break;
+          case 'pillar-1':
+            enterScreensaver();
+            Animations.jumpToPillar(0);
+            break;
+          case 'pillar-2':
+            enterScreensaver();
+            Animations.jumpToPillar(1);
+            break;
+          case 'pillar-3':
+            enterScreensaver();
+            Animations.jumpToPillar(2);
+            break;
+          case 'pillar-4':
+            enterScreensaver();
+            Animations.jumpToPillar(3);
             break;
           case 'chart':
             enterChartMode();

@@ -87,14 +87,14 @@ html, body {
   height: 100vh;
   max-width: 100vw;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 60%, var(--bg-center), var(--bg-edge));
+  background: #014518;
   border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 /* ── Canvas ── */
 #tree-canvas {
   position: absolute;
-  top: 0;
+  top: -50px;
   left: 0;
   width: 100%;
   height: 100%;
@@ -139,17 +139,7 @@ body.about-open #ss-overlays {
 
 /* ── CTA Text ── */
 #cta-text {
-  position: absolute;
-  bottom: 0px;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  text-align: center;
-  padding: 20px 24px;
-  background: linear-gradient(to top, rgba(10, 31, 20, 0.9) 0%, transparent 100%);
-  transition: opacity 0.92s ease;
-  pointer-events: none;
-  transition: opacity var(--transition);
+  display: none;
 }
 
 #cta-text p {
@@ -718,18 +708,18 @@ body.about-open #ss-overlays {
 /* ── Take the Pledge Button (3D layered pill) ── */
 #btn-pledge {
   position: absolute;
-  bottom: calc(12% + 50px);
+  bottom: calc(12% + 85px);
   left: 50%;
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
   z-index: 10;
-  padding: 16px 44px;
+  padding: 12px 33px;
   border: none;
-  border-radius: 32px;
-  background: rgba(255, 255, 255, 0.95);
-  color: #0d2818;
+  border-radius: 24px;
+  background: #468E00;
+  color: #ffffff;
   font-family: 'Montserrat', var(--font);
-  font-size: 15px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -739,26 +729,26 @@ body.about-open #ss-overlays {
   -webkit-user-select: none;
   user-select: none;
   box-shadow:
-    0 0 0 6px rgba(255, 255, 255, 0.25),
-    0 0 0 12px rgba(255, 255, 255, 0.10),
-    0 4px 20px rgba(0, 0, 0, 0.3);
+    0 0 0 4px rgba(70, 142, 0, 0.25),
+    0 0 0 9px rgba(70, 142, 0, 0.10),
+    0 3px 15px rgba(0, 0, 0, 0.3);
   transition: background var(--transition), box-shadow var(--transition), opacity var(--transition);
 }
 
 #btn-pledge:hover {
-  background: #ffffff;
+  background: #52a300;
   box-shadow:
-    0 0 0 6px rgba(255, 255, 255, 0.35),
-    0 0 0 12px rgba(255, 255, 255, 0.15),
-    0 4px 24px rgba(0, 0, 0, 0.35);
+    0 0 0 4px rgba(70, 142, 0, 0.35),
+    0 0 0 9px rgba(70, 142, 0, 0.15),
+    0 3px 18px rgba(0, 0, 0, 0.35);
 }
 
 #btn-pledge:active {
-  background: rgba(255, 255, 255, 0.85);
+  background: #3d7a00;
   box-shadow:
-    0 0 0 5px rgba(255, 255, 255, 0.2),
-    0 0 0 10px rgba(255, 255, 255, 0.08),
-    0 2px 12px rgba(0, 0, 0, 0.3);
+    0 0 0 4px rgba(70, 142, 0, 0.2),
+    0 0 0 8px rgba(70, 142, 0, 0.08),
+    0 2px 9px rgba(0, 0, 0, 0.3);
 }
 
 /* ── Controls (outside 9:16 frame, right side) ── */
@@ -880,6 +870,8 @@ body.screensaver-active #tree-canvas {
 body.screensaver-active #btn-pledge {
   opacity: 1 !important;
   pointer-events: auto !important;
+  color: #ffffff;
+  font-family: 'Montserrat', var(--font);
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -890,6 +882,47 @@ body.screensaver-active #ss-header {
   opacity: 1;
 }
 
+/* ── Pledge Count (tree view) ── */
+#ss-pledge-count {
+  position: absolute;
+  bottom: calc(3% + 50px);
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity var(--transition);
+}
+
+body.screensaver-active #ss-pledge-count,
+body.form-open #ss-pledge-count,
+body.about-open #ss-pledge-count {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+#ss-count-number {
+  font-family: 'P22 Mackinac Pro', Georgia, serif;
+  font-size: clamp(31px, 6.8vw, 48px);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--text-primary);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+  margin: 0 0 4px;
+}
+
+#ss-count-tally {
+  font-family: 'P22 Mackinac Pro', Georgia, serif;
+  font-size: clamp(14px, 2.5vw, 19px);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+  color: var(--text-primary);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+  margin: 0;
+}
+
 body.screensaver-active #btn-screensaver {
   opacity: 1;
   pointer-events: auto;
@@ -898,7 +931,7 @@ body.screensaver-active #btn-screensaver {
 /* ── Screensaver SVG Overlays ── */
 #ss-overlays {
   position: absolute;
-  top: 50%;
+  top: calc(50% + 50px);
   left: 50%;
   -webkit-transform: translate(-50%, -58%);
   transform: translate(-50%, -58%);
@@ -914,7 +947,8 @@ body.screensaver-active #ss-overlays {
   opacity: 1;
 }
 
-#ss-overlays > img {
+#ss-overlays > img,
+#ss-overlays > canvas {
   position: absolute;
   opacity: 0;
   transition: opacity 2s ease;
@@ -1001,12 +1035,12 @@ body.form-open #ss-about {
 .ss-header-title {
   font-family: var(--font);
   font-weight: 700;
-  font-size: clamp(16px, 2.2vw, 24px);
+  font-size: clamp(11px, 1.5vw, 17px);
   letter-spacing: 2px;
   text-transform: uppercase;
   color: #ffffff;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-  margin-bottom: clamp(12px, 1.5vh, 20px);
+  margin-bottom: clamp(42px, 4vh, 50px);
 }
 
 .ss-header-blurb {
@@ -1043,9 +1077,9 @@ body.form-open #ss-about {
 
 /* Turquoise water — below the circle */
 #ss-svg-turquoise {
-  bottom: -35%;
-  left: 15%;
-  width: 70%;
+  bottom: -55%;
+  left: calc(15% - 50px);
+  width: 105%;
 }
 
 /* Green recycling — centered on circle, slow rotation */
@@ -1093,7 +1127,7 @@ body.form-open #ss-about {
 
   #ss-svg-turquoise {
     bottom: -20%;
-    width: 55%;
+    width: 82.5%;
   }
 
   #ss-svg-green {
@@ -1125,7 +1159,7 @@ body.form-open #ss-about {
   }
 
   .ss-header-title {
-    font-size: clamp(12px, 1.8vw, 16px);
+    font-size: clamp(8px, 1.3vw, 11px);
   }
 
   .ss-header-blurb {
@@ -1141,7 +1175,7 @@ body.form-open #ss-about {
 
   #ss-svg-turquoise {
     bottom: -10%;
-    width: 45%;
+    width: 67.5%;
   }
 
   #ss-svg-green {
@@ -1162,7 +1196,7 @@ body.form-open #ss-about {
   }
 
   .ss-header-title {
-    font-size: clamp(14px, 3vw, 20px);
+    font-size: clamp(10px, 2.1vw, 14px);
   }
 
   .ss-header-blurb {

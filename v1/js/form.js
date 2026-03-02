@@ -70,11 +70,9 @@ var PledgeForm = (function() {
     if (field === 'name') {
       Keyboard.setActiveInput(nameInput);
       emailSuffixes.classList.add('hidden');
-      Keyboard.setReturnLabel('Next');
     } else {
       Keyboard.setActiveInput(emailInput);
       emailSuffixes.classList.remove('hidden');
-      Keyboard.setReturnLabel('Done');
     }
     Keyboard.show();
   }
@@ -93,16 +91,7 @@ var PledgeForm = (function() {
   function initKeyboard() {
     var kbContainer = document.getElementById('keyboard-container');
     Keyboard.init(kbContainer, function(action) {
-      if (action === 'return') {
-        if (activeField === 'name') {
-          // Move to email field
-          focusField('email');
-        } else {
-          if (canSubmit) {
-            handleSubmit();
-          }
-        }
-      } else if (action === 'input') {
+      if (action === 'input') {
         validate();
         updateNameDisplay();
       }
