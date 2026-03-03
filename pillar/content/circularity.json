@@ -1,0 +1,42 @@
+{
+  "id": "circularity",
+  "label": "Circularity & Waste",
+  "color": "#166534",
+  "idle": {
+    "headline": "Placeholder headline for Circularity & Waste pillar.",
+    "cta": "Explore Cox Conserves Circularity & Waste goals.",
+    "illustration": "assets/circularity-idle.svg"
+  },
+  "items": [
+    {
+      "tag": "CIRCULARITY & WASTE",
+      "title": "Placeholder article 1",
+      "body": "Content to be provided.",
+      "media": {
+        "type": "photo",
+        "src": "/media/photos/circularity-1.jpg"
+      },
+      "thumbnails": []
+    },
+    {
+      "tag": "CIRCULARITY & WASTE",
+      "title": "Placeholder article 2",
+      "body": "Content to be provided.",
+      "media": {
+        "type": "photo",
+        "src": "/media/photos/circularity-2.jpg"
+      },
+      "thumbnails": []
+    },
+    {
+      "tag": "CIRCULARITY & WASTE",
+      "title": "Placeholder article 3",
+      "body": "Content to be provided.",
+      "media": {
+        "type": "photo",
+        "src": "/media/photos/circularity-3.jpg"
+      },
+      "thumbnails": []
+    }
+  ]
+}

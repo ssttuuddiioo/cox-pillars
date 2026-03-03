@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7.97 10.62">
+  <defs>
+    <style>
+      .cls-1 {
+        stroke-dasharray: .71 .71;
+      }
+
+      .cls-1, .cls-2 {
+        stroke: #fbf6eb;
+        stroke-width: .42px;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        fill: none;
+        stroke-linecap: round;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-3 {
+        stroke: #73b2ff;
+        stroke-width: .33px;
+      }
+    </style>
+  </defs>
+  <g id="Carbon_Climate" data-name="Carbon &amp;amp; Climate">
+    <g>
+      <g>
+        <path class="cls-3" d="M4.55,6.31l.77-.86c.23-.25.59-.3.84-.07h0c.25.23.27.61.05.86l-.24.27"/>
+        <path class="cls-3" d="M3.75,5.34l.87-.98c.22-.25.62-.26.87-.04h0c.25.22.29.62.07.86l-.2.23"/>
+        <path class="cls-3" d="M4.67,4.31l1.49-1.65c.23-.26.19-.66-.06-.89h0c-.3-.27-.64-.2-.87.06l-2.95,3.29s-.05,0-.05-.02l.27-1.25c.08-.34-.12-.68-.46-.77h0c-.35-.1-.72.11-.81.47L.25,7.28c-.24.92.05,1.9.76,2.53h0c1.02.91,2.58.85,3.53-.14l2.18-2.2c.28-.28.23-.72-.03-.95h0c-.25-.22-.58-.16-.81.09l-.57.64"/>
+      </g>
+      <g>
+        <path class="cls-2" d="M4.02,2.01c0-.11.02-.22.04-.33"/>
+        <path class="cls-1" d="M4.35,1.03c.05-.07.1-.13.15-.19C5.19.06,6.37,0,7.14.69s.83,1.87.14,2.64c-.14.16-.31.29-.49.39"/>
+        <path class="cls-2" d="M6.47,3.86c-.11.03-.22.06-.33.07"/>
+      </g>
+    </g>
+  </g>
+</svg>

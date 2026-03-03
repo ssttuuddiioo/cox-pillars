@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23.71 23.71">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #265ef9;
+        stroke-miterlimit: 10;
+        stroke-width: .54px;
+      }
+    </style>
+  </defs>
+  <g id="Carbon_Climate" data-name="Carbon &amp;amp; Climate">
+    <g>
+      <g>
+        <polyline class="cls-1" points="12.39 7.21 17.04 11.86 12.39 16.5"/>
+        <line class="cls-1" x1="17.04" y1="11.86" x2="5.65" y2="11.86"/>
+      </g>
+      <circle class="cls-1" cx="11.86" cy="11.86" r="11.59"/>
+    </g>
+  </g>
+</svg>

@@ -18,151 +18,32 @@
   var idleTimer = null;
   var IDLE_TIMEOUT = 60000; // 1 minute
 
-  // ── Pillar menu card data ──
+  // ── About page content per pillar ──
   var PILLAR_KEYS = ['blue', 'green', 'turquoise', 'orange'];
-  var activePillarMenuKey = null; // tracks which pillar menu is open
-
-  var PILLAR_MENU = {
-    blue: {
-      color: '#3366FF',
-      label: 'CARBON & CLIMATE',
-      icon: '../assets/svg/blue-icon.svg',
-      cards: [
-        { title: 'Creating renewable energy.', aboutKey: 'blue-1' },
-        { title: "It\u2019s not a flux capacitor, Marty. But it\u2019s close!", aboutKey: 'blue-2' },
-        { title: 'Local partnerships. Big impact.', aboutKey: 'blue-3' }
-      ]
-    },
-    green: {
-      color: '#2D8C3C',
-      label: 'CIRCULARITY & WASTE',
-      icon: '../assets/svg/green-icon.svg',
-      cards: [
-        { title: 'Closing the loop on waste.', aboutKey: 'green-1' },
-        { title: 'From landfill to lifecycle.', aboutKey: 'green-2' },
-        { title: 'Rethink. Reuse. Recycle.', aboutKey: 'green-3' }
-      ]
-    },
-    turquoise: {
-      color: '#00A3B4',
-      label: 'WATER',
-      icon: '../assets/svg/torquois-icon.svg',
-      cards: [
-        { title: 'Every drop counts.', aboutKey: 'turquoise-1' },
-        { title: 'Protecting our watersheds.', aboutKey: 'turquoise-2' },
-        { title: 'Smart water, bright future.', aboutKey: 'turquoise-3' }
-      ]
-    },
-    orange: {
-      color: '#E8601C',
-      label: 'HABITAT & SPECIES',
-      icon: '../assets/svg/orange-icon.svg',
-      cards: [
-        { title: 'Restoring natural habitats.', aboutKey: 'orange-1' },
-        { title: 'Protecting biodiversity.', aboutKey: 'orange-2' },
-        { title: 'Building wildlife corridors.', aboutKey: 'orange-3' }
-      ]
-    }
-  };
-
-  // ── About page content per pillar (original detail pages) ──
   var ABOUT_CONTENT = {
     blue: {
-      icon: '../assets/svg/blue-icon.svg',
+      icon: 'assets/svg/blue-icon.svg',
       title: 'COX\nCarbon & Climate',
       subtitle: 'Reducing our carbon footprint through innovation and sustainable energy solutions.',
       body: '<p>Pellentesque et nisi quis ipsum aliquam laoreet ut in elit. Vestibulum id ex magna. Proin eu pharetra eros. Sed id neque odio. Pellentesque aliquam lacus sed mi gravida, sed faucibus odio lacinia. Vestibulum a velit placerat, semper urna in, mollis libero. Suspendisse eget purus condimentum lectus maximus tempor vitae id ligula. Nunc a ornare lorem, ut placerat sapien. Cras cursus massa magna, at porttitor mauris posuere non. Fusce ac odio porttitor, aliquam purus sit amet, blandit lectus. Ut quis nunc ut lectus sodales facilisis.</p><p>Nullam felis lacus, pulvinar non faucibus vitae, elementum eu turpis. Pellentesque rhoncus pellentesque lorem, vel faucibus neque laoreet eget. Vivamus lobortis sed leo et pellentesque. Nunc sollicitudin sollicitudin venenatis. Phasellus est nibh, bibendum id arcu in, tempus dictum urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam suscipit non eros at pretium. Aliquam magna elit, mollis quis tellus ac, tempor ullamcorper lectus. Fusce at pharetra ligula, a pretium sem. Integer placerat neque vitae est venenatis congue.</p><p>Cras aliquam ac arcu eu sodales. Phasellus congue pulvinar quam, ut euismod nisl ullamcorper ut. Quisque a placerat orci. Sed ligula libero, mollis vitae dignissim interdum, pretium et ipsum. Duis eu nibh ex. Cras vitae arcu feugiat, sagittis ex vitae, consequat nisl. Donec fringilla arcu ac augue porta tempor sit amet at nisi. Pellentesque molestie justo sed nulla finibus, id placerat sem pharetra. Sed eleifend consectetur ultricies.</p><p>Donec cursus, risus ut maximus rutrum, neque erat facilisis mauris, cursus fermentum augue sem et libero. Curabitur tincidunt diam et arcu posuere lacinia a eu ipsum. Phasellus a est velit. Phasellus rutrum nulla non luctus egestas. Maecenas ut laoreet eros, a convallis augue.</p>'
     },
-    green: {
-      icon: '../assets/svg/green-icon.svg',
-      title: 'COX\nCircularity & Waste',
-      subtitle: 'Embracing circular economy principles to minimize waste and maximize resource efficiency.',
-      body: '<p>Pellentesque et nisi quis ipsum aliquam laoreet ut in elit. Vestibulum id ex magna. Proin eu pharetra eros. Sed id neque odio. Pellentesque aliquam lacus sed mi gravida, sed faucibus odio lacinia. Vestibulum a velit placerat, semper urna in, mollis libero. Suspendisse eget purus condimentum lectus maximus tempor vitae id ligula. Nunc a ornare lorem, ut placerat sapien. Cras cursus massa magna, at porttitor mauris posuere non. Fusce ac odio porttitor, aliquam purus sit amet, blandit lectus. Ut quis nunc ut lectus sodales facilisis.</p><p>Nullam felis lacus, pulvinar non faucibus vitae, elementum eu turpis. Pellentesque rhoncus pellentesque lorem, vel faucibus neque laoreet eget. Vivamus lobortis sed leo et pellentesque. Nunc sollicitudin sollicitudin venenatis. Phasellus est nibh, bibendum id arcu in, tempus dictum urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam suscipit non eros at pretium. Aliquam magna elit, mollis quis tellus ac, tempor ullamcorper lectus. Fusce at pharetra ligula, a pretium sem. Integer placerat neque vitae est venenatis congue.</p><p>Cras aliquam ac arcu eu sodales. Phasellus congue pulvinar quam, ut euismod nisl ullamcorper ut. Quisque a placerat orci. Sed ligula libero, mollis vitae dignissim interdum, pretium et ipsum. Duis eu nibh ex. Cras vitae arcu feugiat, sagittis ex vitae, consequat nisl. Donec fringilla arcu ac augue porta tempor sit amet at nisi. Pellentesque molestie justo sed nulla finibus, id placerat sem pharetra. Sed eleifend consectetur ultricies.</p><p>Donec cursus, risus ut maximus rutrum, neque erat facilisis mauris, cursus fermentum augue sem et libero. Curabitur tincidunt diam et arcu posuere lacinia a eu ipsum. Phasellus a est velit. Phasellus rutrum nulla non luctus egestas. Maecenas ut laoreet eros, a convallis augue.</p>'
-    },
     turquoise: {
-      icon: '../assets/svg/torquois-icon.svg',
+      icon: 'assets/svg/torquois-icon.svg',
       title: 'COX\nWater',
       subtitle: 'Preserving and protecting our most precious natural resource for future generations.',
       body: '<p>Pellentesque et nisi quis ipsum aliquam laoreet ut in elit. Vestibulum id ex magna. Proin eu pharetra eros. Sed id neque odio. Pellentesque aliquam lacus sed mi gravida, sed faucibus odio lacinia. Vestibulum a velit placerat, semper urna in, mollis libero. Suspendisse eget purus condimentum lectus maximus tempor vitae id ligula. Nunc a ornare lorem, ut placerat sapien. Cras cursus massa magna, at porttitor mauris posuere non. Fusce ac odio porttitor, aliquam purus sit amet, blandit lectus. Ut quis nunc ut lectus sodales facilisis.</p><p>Nullam felis lacus, pulvinar non faucibus vitae, elementum eu turpis. Pellentesque rhoncus pellentesque lorem, vel faucibus neque laoreet eget. Vivamus lobortis sed leo et pellentesque. Nunc sollicitudin sollicitudin venenatis. Phasellus est nibh, bibendum id arcu in, tempus dictum urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam suscipit non eros at pretium. Aliquam magna elit, mollis quis tellus ac, tempor ullamcorper lectus. Fusce at pharetra ligula, a pretium sem. Integer placerat neque vitae est venenatis congue.</p><p>Cras aliquam ac arcu eu sodales. Phasellus congue pulvinar quam, ut euismod nisl ullamcorper ut. Quisque a placerat orci. Sed ligula libero, mollis vitae dignissim interdum, pretium et ipsum. Duis eu nibh ex. Cras vitae arcu feugiat, sagittis ex vitae, consequat nisl. Donec fringilla arcu ac augue porta tempor sit amet at nisi. Pellentesque molestie justo sed nulla finibus, id placerat sem pharetra. Sed eleifend consectetur ultricies.</p><p>Donec cursus, risus ut maximus rutrum, neque erat facilisis mauris, cursus fermentum augue sem et libero. Curabitur tincidunt diam et arcu posuere lacinia a eu ipsum. Phasellus a est velit. Phasellus rutrum nulla non luctus egestas. Maecenas ut laoreet eros, a convallis augue.</p>'
     },
+    green: {
+      icon: 'assets/svg/green-icon.svg',
+      title: 'COX\nCircularity & Waste',
+      subtitle: 'Embracing circular economy principles to minimize waste and maximize resource efficiency.',
+      body: '<p>Pellentesque et nisi quis ipsum aliquam laoreet ut in elit. Vestibulum id ex magna. Proin eu pharetra eros. Sed id neque odio. Pellentesque aliquam lacus sed mi gravida, sed faucibus odio lacinia. Vestibulum a velit placerat, semper urna in, mollis libero. Suspendisse eget purus condimentum lectus maximus tempor vitae id ligula. Nunc a ornare lorem, ut placerat sapien. Cras cursus massa magna, at porttitor mauris posuere non. Fusce ac odio porttitor, aliquam purus sit amet, blandit lectus. Ut quis nunc ut lectus sodales facilisis.</p><p>Nullam felis lacus, pulvinar non faucibus vitae, elementum eu turpis. Pellentesque rhoncus pellentesque lorem, vel faucibus neque laoreet eget. Vivamus lobortis sed leo et pellentesque. Nunc sollicitudin sollicitudin venenatis. Phasellus est nibh, bibendum id arcu in, tempus dictum urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam suscipit non eros at pretium. Aliquam magna elit, mollis quis tellus ac, tempor ullamcorper lectus. Fusce at pharetra ligula, a pretium sem. Integer placerat neque vitae est venenatis congue.</p><p>Cras aliquam ac arcu eu sodales. Phasellus congue pulvinar quam, ut euismod nisl ullamcorper ut. Quisque a placerat orci. Sed ligula libero, mollis vitae dignissim interdum, pretium et ipsum. Duis eu nibh ex. Cras vitae arcu feugiat, sagittis ex vitae, consequat nisl. Donec fringilla arcu ac augue porta tempor sit amet at nisi. Pellentesque molestie justo sed nulla finibus, id placerat sem pharetra. Sed eleifend consectetur ultricies.</p><p>Donec cursus, risus ut maximus rutrum, neque erat facilisis mauris, cursus fermentum augue sem et libero. Curabitur tincidunt diam et arcu posuere lacinia a eu ipsum. Phasellus a est velit. Phasellus rutrum nulla non luctus egestas. Maecenas ut laoreet eros, a convallis augue.</p>'
+    },
     orange: {
-      icon: '../assets/svg/orange-icon.svg',
+      icon: 'assets/svg/orange-icon.svg',
       title: 'COX\nHabitat & Species',
       subtitle: 'Protecting biodiversity and restoring natural habitats across our communities.',
       body: '<p>Pellentesque et nisi quis ipsum aliquam laoreet ut in elit. Vestibulum id ex magna. Proin eu pharetra eros. Sed id neque odio. Pellentesque aliquam lacus sed mi gravida, sed faucibus odio lacinia. Vestibulum a velit placerat, semper urna in, mollis libero. Suspendisse eget purus condimentum lectus maximus tempor vitae id ligula. Nunc a ornare lorem, ut placerat sapien. Cras cursus massa magna, at porttitor mauris posuere non. Fusce ac odio porttitor, aliquam purus sit amet, blandit lectus. Ut quis nunc ut lectus sodales facilisis.</p><p>Nullam felis lacus, pulvinar non faucibus vitae, elementum eu turpis. Pellentesque rhoncus pellentesque lorem, vel faucibus neque laoreet eget. Vivamus lobortis sed leo et pellentesque. Nunc sollicitudin sollicitudin venenatis. Phasellus est nibh, bibendum id arcu in, tempus dictum urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam suscipit non eros at pretium. Aliquam magna elit, mollis quis tellus ac, tempor ullamcorper lectus. Fusce at pharetra ligula, a pretium sem. Integer placerat neque vitae est venenatis congue.</p><p>Cras aliquam ac arcu eu sodales. Phasellus congue pulvinar quam, ut euismod nisl ullamcorper ut. Quisque a placerat orci. Sed ligula libero, mollis vitae dignissim interdum, pretium et ipsum. Duis eu nibh ex. Cras vitae arcu feugiat, sagittis ex vitae, consequat nisl. Donec fringilla arcu ac augue porta tempor sit amet at nisi. Pellentesque molestie justo sed nulla finibus, id placerat sem pharetra. Sed eleifend consectetur ultricies.</p><p>Donec cursus, risus ut maximus rutrum, neque erat facilisis mauris, cursus fermentum augue sem et libero. Curabitur tincidunt diam et arcu posuere lacinia a eu ipsum. Phasellus a est velit. Phasellus rutrum nulla non luctus egestas. Maecenas ut laoreet eros, a convallis augue.</p>'
-    },
-    // ── Sub-topic content (opened from pillar menu cards) ──
-    'blue-1': {
-      icon: '../assets/svg/blue-icon.svg',
-      title: 'Creating\nRenewable Energy',
-      subtitle: 'Investing in solar, wind, and innovative energy solutions to power a cleaner tomorrow.',
-      body: '<p>Cox Enterprises is committed to creating renewable energy solutions that reduce our reliance on fossil fuels. Through strategic investments in solar and wind power, we are building a cleaner energy future for our communities.</p><p>Our renewable energy initiatives span across our operations, from powering our facilities with clean energy to supporting community solar projects that bring affordable clean power to neighborhoods.</p>'
-    },
-    'blue-2': {
-      icon: '../assets/svg/blue-icon.svg',
-      title: 'Carbon Capture\n& Innovation',
-      subtitle: 'Pioneering carbon capture technology to fight climate change head-on.',
-      body: '<p>Innovation is at the heart of our climate strategy. We are investing in cutting-edge carbon capture technologies that remove CO2 directly from the atmosphere, turning a challenge into an opportunity.</p><p>These breakthrough technologies represent a new frontier in sustainability, complementing our renewable energy portfolio with active carbon removal solutions.</p>'
-    },
-    'blue-3': {
-      icon: '../assets/svg/blue-icon.svg',
-      title: 'Local Partnerships.\nBig Impact.',
-      subtitle: 'Collaborating with communities and organizations to amplify our environmental impact.',
-      body: '<p>We believe that meaningful change happens locally. By partnering with community organizations, universities, and local governments, we multiply our impact and create lasting environmental benefits.</p><p>From community clean energy programs to local conservation partnerships, Cox is working hand-in-hand with the people and places we serve to build a more sustainable future together.</p>'
-    },
-    'green-1': {
-      icon: '../assets/svg/green-icon.svg',
-      title: 'Closing the Loop\non Waste',
-      subtitle: 'Embracing circular economy principles to eliminate waste at every stage.',
-      body: '<p>Our circularity initiatives focus on redesigning processes and products to keep materials in use for as long as possible. By closing the loop, we transform waste streams into valuable resources.</p><p>From manufacturing to end-of-life, we are rethinking how materials flow through our operations and finding innovative ways to reduce, reuse, and recycle.</p>'
-    },
-    'green-2': {
-      icon: '../assets/svg/green-icon.svg',
-      title: 'From Landfill\nto Lifecycle',
-      subtitle: 'Diverting waste from landfills through innovative recycling and recovery programs.',
-      body: '<p>Cox is working to keep materials out of landfills by investing in recycling infrastructure and waste recovery technologies. Every ton diverted from landfill represents a step toward a more circular future.</p><p>Our programs focus on the most impactful waste streams, from electronics recycling to composting organic materials, ensuring valuable resources get a second life.</p>'
-    },
-    'green-3': {
-      icon: '../assets/svg/green-icon.svg',
-      title: 'Rethink.\nReuse. Recycle.',
-      subtitle: 'Empowering employees and communities to make sustainable choices every day.',
-      body: '<p>Sustainability starts with everyday choices. We provide our employees and communities with the tools and knowledge to reduce waste, choose reusable alternatives, and recycle effectively.</p><p>Through education programs, accessible recycling infrastructure, and sustainable procurement practices, we are building a culture where circular thinking is second nature.</p>'
-    },
-    'turquoise-1': {
-      icon: '../assets/svg/torquois-icon.svg',
-      title: 'Every Drop\nCounts',
-      subtitle: 'Reducing water consumption across our operations through conservation and efficiency.',
-      body: '<p>Water is our most precious resource. Cox is implementing advanced water conservation measures across our facilities, from smart irrigation systems to water-efficient cooling technologies.</p><p>By monitoring consumption in real-time and setting ambitious reduction targets, we are ensuring every drop of water is used wisely and responsibly.</p>'
-    },
-    'turquoise-2': {
-      icon: '../assets/svg/torquois-icon.svg',
-      title: 'Protecting Our\nWatersheds',
-      subtitle: 'Safeguarding rivers, streams, and groundwater for generations to come.',
-      body: '<p>Healthy watersheds are essential for thriving communities and ecosystems. Cox supports watershed protection efforts that preserve water quality and natural habitats.</p><p>From riparian buffer restoration to stormwater management, our initiatives protect the water sources that communities depend on while supporting biodiversity.</p>'
-    },
-    'turquoise-3': {
-      icon: '../assets/svg/torquois-icon.svg',
-      title: 'Smart Water,\nBright Future',
-      subtitle: 'Using technology and innovation to solve water challenges.',
-      body: '<p>Smart technology is transforming how we manage water resources. Cox is deploying IoT sensors, data analytics, and AI-powered systems to optimize water use across our operations.</p><p>These innovations help us detect leaks, predict demand, and make data-driven decisions that conserve water while maintaining operational excellence.</p>'
-    },
-    'orange-1': {
-      icon: '../assets/svg/orange-icon.svg',
-      title: 'Restoring Natural\nHabitats',
-      subtitle: 'Bringing degraded ecosystems back to life through restoration and conservation.',
-      body: '<p>Habitat loss is one of the greatest threats to biodiversity. Cox is investing in habitat restoration projects that bring damaged ecosystems back to health, from reforestation to wetland restoration.</p><p>Our restoration efforts create thriving ecosystems that support wildlife, clean water, and healthy communities for generations to come.</p>'
-    },
-    'orange-2': {
-      icon: '../assets/svg/orange-icon.svg',
-      title: 'Protecting\nBiodiversity',
-      subtitle: 'Preserving the rich diversity of life that sustains our planet.',
-      body: '<p>Biodiversity is the foundation of healthy ecosystems. Cox supports conservation programs that protect endangered species, preserve critical habitats, and promote ecological balance.</p><p>Through partnerships with conservation organizations, we are helping to safeguard the incredible diversity of life that makes our planet resilient and vibrant.</p>'
-    },
-    'orange-3': {
-      icon: '../assets/svg/orange-icon.svg',
-      title: 'Building Wildlife\nCorridors',
-      subtitle: 'Connecting fragmented habitats so wildlife can thrive and migrate safely.',
-      body: '<p>Wildlife corridors are essential for allowing animals to move between habitats, find food, and maintain genetic diversity. Cox supports the creation of connected green spaces that serve as vital pathways for wildlife.</p><p>By working with landowners, governments, and conservation groups, we are building a network of corridors that help species adapt to a changing world.</p>'
     }
   };
 
@@ -261,7 +142,7 @@
     treeData.screensaverMode = false;
     treeData.screensaverTransition = 0;
 
-    // Wire about page (original — screensaver ABOUT link opens pillar detail)
+    // Wire about page
     var ssAbout = document.getElementById('ss-about');
     if (ssAbout) {
       ssAbout.addEventListener('click', function() {
@@ -275,13 +156,6 @@
     if (aboutBackBtn) {
       aboutBackBtn.addEventListener('click', function() {
         closeAbout();
-      });
-    }
-    // Wire pillar menu close
-    var pillarMenuCloseBtn = document.getElementById('pillar-menu-close-btn');
-    if (pillarMenuCloseBtn) {
-      pillarMenuCloseBtn.addEventListener('click', function() {
-        closePillarMenu();
       });
     }
 
@@ -679,82 +553,24 @@
     return Math.floor(pos / SS_CYCLE) % 5;
   }
 
-  // ── Pillar Menu (card-based navigation) ──
-  function openPillarMenu(pillarKey) {
-    var menu = PILLAR_MENU[pillarKey];
-    if (!menu) return;
-    activePillarMenuKey = pillarKey;
-
-    var container = document.getElementById('pillar-menu-cards');
-    container.innerHTML = '';
-
-    var arrowSvg = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-      '<path d="M5 12h14M13 6l6 6-6 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
-      '</svg>';
-
-    for (var i = 0; i < menu.cards.length; i++) {
-      var card = menu.cards[i];
-      var el = document.createElement('div');
-      el.className = 'pillar-card';
-      el.setAttribute('data-card-index', String(i));
-      el.setAttribute('data-about-key', card.aboutKey);
-      el.style.background = menu.color;
-
-      el.innerHTML =
-        '<div class="pillar-card-header">' +
-          '<img class="pillar-card-icon" src="' + menu.icon + '" alt="">' +
-          '<span class="pillar-card-label">' + menu.label + '</span>' +
-        '</div>' +
-        '<h3 class="pillar-card-title">' + card.title + '</h3>' +
-        '<div class="pillar-card-arrow">' + arrowSvg + '</div>';
-
-      el.addEventListener('click', (function(aboutKey) {
-        return function() { openAbout(aboutKey); };
-      })(card.aboutKey));
-
-      container.appendChild(el);
-    }
-
-    document.getElementById('pillar-menu-modal').classList.remove('hidden');
-    document.body.classList.add('about-open');
-  }
-
-  function closePillarMenu() {
-    document.getElementById('pillar-menu-modal').classList.add('hidden');
-    document.body.classList.remove('about-open');
-    activePillarMenuKey = null;
-  }
-
-  function isPillarMenuOpen() {
-    return !document.getElementById('pillar-menu-modal').classList.contains('hidden');
-  }
-
-  // ── About detail page (opened from pillar menu card) ──
-  function openAbout(aboutKey) {
-    var content = ABOUT_CONTENT[aboutKey];
+  function openAbout(pillarKey) {
+    var content = ABOUT_CONTENT[pillarKey];
     if (!content) return;
     document.getElementById('about-pillar-icon').src = content.icon;
     document.getElementById('about-title').textContent = content.title;
     document.getElementById('about-subtitle').textContent = content.subtitle;
     document.getElementById('about-body').innerHTML = content.body;
     document.getElementById('about-modal').classList.remove('hidden');
-    // Keep about-open class (already set by pillar menu)
-    if (!document.body.classList.contains('about-open')) {
-      document.body.classList.add('about-open');
-    }
+    document.body.classList.add('about-open');
   }
 
   function closeAbout() {
     document.getElementById('about-modal').classList.add('hidden');
-    if (isPillarMenuOpen()) {
-      closePillarMenu();
-    }
     document.body.classList.remove('about-open');
   }
 
   function isAboutOpen() {
-    return !document.getElementById('about-modal').classList.contains('hidden') ||
-           !document.getElementById('pillar-menu-modal').classList.contains('hidden');
+    return !document.getElementById('about-modal').classList.contains('hidden');
   }
 
   function resetIdleTimer() {
@@ -1040,9 +856,6 @@
             break;
           case 'about':
             openAbout(PILLAR_KEYS[0]);
-            break;
-          case 'pillar-menu':
-            openPillarMenu(PILLAR_KEYS[0]);
             break;
           case 'pillar-1':
             enterScreensaver();

@@ -1,0 +1,67 @@
+/* ══════════════════════════════════════════
+   Cox Conserves — Brand Tokens & Font Faces
+   Shared by center/ and pillar/ apps
+   ══════════════════════════════════════════ */
+
+/* ── Gotham ── */
+@font-face {
+  font-family: 'Gotham';
+  src: url('../fonts/Gotham-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Gotham';
+  src: url('../fonts/Gotham-Book.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Gotham';
+  src: url('../fonts/Gotham-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Gotham';
+  src: url('../fonts/Gotham-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* ── P22 Mackinac Pro (serif display) ── */
+/* NOTE: Font files not yet in repo — add to shared/fonts/ when available.
+   Falls back to Georgia until then. */
+@font-face {
+  font-family: 'P22 Mackinac Pro';
+  src: url('../fonts/P22MackinacPro-Book.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'P22 Mackinac Pro';
+  src: url('../fonts/P22MackinacPro-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* ── Brand Tokens ── */
+:root {
+  /* Typography stacks */
+  --font-primary: 'Gotham', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'P22 Mackinac Pro', Georgia, serif;
+
+  /* Cox brand green */
+  --cox-green: #468E00;
+
+  /* Pillar palette (from engineering brief) */
+  --pillar-carbon: #1E3A8A;
+  --pillar-water: #0E7490;
+  --pillar-circularity: #166534;
+  --pillar-habitat: #C2410C;
+
+  /* Shared neutrals */
+  --bg-dark: #0C1626;
+  --text-white: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.65);
+}

@@ -1,0 +1,42 @@
+{
+  "id": "habitat",
+  "label": "Habitat & Species",
+  "color": "#C2410C",
+  "idle": {
+    "headline": "Placeholder headline for Habitat & Species pillar.",
+    "cta": "Explore Cox Conserves Habitat & Species goals.",
+    "illustration": "assets/habitat-idle.svg"
+  },
+  "items": [
+    {
+      "tag": "HABITAT & SPECIES",
+      "title": "Placeholder article 1",
+      "body": "Content to be provided.",
+      "media": {
+        "type": "photo",
+        "src": "/media/photos/habitat-1.jpg"
+      },
+      "thumbnails": []
+    },
+    {
+      "tag": "HABITAT & SPECIES",
+      "title": "Placeholder article 2",
+      "body": "Content to be provided.",
+      "media": {
+        "type": "photo",
+        "src": "/media/photos/habitat-2.jpg"
+      },
+      "thumbnails": []
+    },
+    {
+      "tag": "HABITAT & SPECIES",
+      "title": "Placeholder article 3",
+      "body": "Content to be provided.",
+      "media": {
+        "type": "photo",
+        "src": "/media/photos/habitat-3.jpg"
+      },
+      "thumbnails": []
+    }
+  ]
+}

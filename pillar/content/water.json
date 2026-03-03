@@ -1,0 +1,42 @@
+{
+  "id": "water",
+  "label": "Water",
+  "color": "#0E7490",
+  "idle": {
+    "headline": "Placeholder headline for Water pillar.",
+    "cta": "Explore Cox Conserves Water goals.",
+    "illustration": "assets/water-idle.svg"
+  },
+  "items": [
+    {
+      "tag": "WATER",
+      "title": "Placeholder article 1",
+      "body": "Content to be provided.",
+      "media": {
+        "type": "photo",
+        "src": "/media/photos/water-1.jpg"
+      },
+      "thumbnails": []
+    },
+    {
+      "tag": "WATER",
+      "title": "Placeholder article 2",
+      "body": "Content to be provided.",
+      "media": {
+        "type": "photo",
+        "src": "/media/photos/water-2.jpg"
+      },
+      "thumbnails": []
+    },
+    {
+      "tag": "WATER",
+      "title": "Placeholder article 3",
+      "body": "Content to be provided.",
+      "media": {
+        "type": "photo",
+        "src": "/media/photos/water-3.jpg"
+      },
+      "thumbnails": []
+    }
+  ]
+}

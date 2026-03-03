@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shared/css/brand.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -95,36 +96,6 @@
     </div>
   </div>
 
-  <!-- Pillar menu modal — card-based navigation -->
-  <div id="pillar-menu-modal" class="modal hidden">
-    <div class="modal-backdrop"></div>
-    <div class="pillar-menu-fullscreen">
-      <button type="button" id="pillar-menu-close-btn" class="pillar-menu-close-btn" aria-label="Close">&times;</button>
-      <!-- Cox Conserves Logo -->
-      <div class="pillar-menu-logo">
-        <svg viewBox="0 0 420 60" xmlns="http://www.w3.org/2000/svg">
-          <!-- C -->
-          <path d="M28,8 C12,8 2,20 2,30 C2,40 12,52 28,52 C36,52 42,48 46,43" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
-          <!-- O with globe leaf -->
-          <circle cx="72" cy="30" r="22" stroke="white" stroke-width="4" fill="none"/>
-          <path d="M60,22 C66,18 78,18 84,22" stroke="white" stroke-width="1.5" fill="none"/>
-          <path d="M58,32 C66,28 78,28 86,32" stroke="white" stroke-width="1.5" fill="none"/>
-          <path d="M72,8 C72,8 72,52 72,52" stroke="white" stroke-width="1.5" fill="none"/>
-          <path d="M76,10 C82,16 86,24 86,30" stroke="white" stroke-width="1.5" fill="none"/>
-          <!-- Leaf on O -->
-          <path d="M88,12 C88,12 96,4 96,4 C96,4 92,14 88,12Z" fill="white"/>
-          <!-- X -->
-          <line x1="106" y1="8" x2="142" y2="52" stroke="white" stroke-width="4" stroke-linecap="round"/>
-          <line x1="142" y1="8" x2="106" y2="52" stroke="white" stroke-width="4" stroke-linecap="round"/>
-          <!-- CONSERVES -->
-          <text x="168" y="40" fill="white" font-family="Gotham, Helvetica Neue, Arial, sans-serif" font-size="26" font-weight="300" letter-spacing="8">CONSERVES</text>
-        </svg>
-      </div>
-      <!-- Cards container (populated by JS) -->
-      <div class="pillar-menu-cards" id="pillar-menu-cards"></div>
-    </div>
-  </div>
-
   <!-- About modal — full-screen pillar detail -->
   <div id="about-modal" class="modal hidden">
     <div class="modal-backdrop"></div>
@@ -161,22 +132,22 @@
   <!-- Screensaver pillar header (icon + title + blurb) -->
   <div id="ss-header">
     <div class="ss-pillar-block" id="ss-block-blue">
-      <img class="ss-header-icon" src="../assets/svg/blue-icon.svg" alt="">
+      <img class="ss-header-icon" src="assets/svg/blue-icon.svg" alt="">
       <span class="ss-header-title">Carbon &amp; Climate</span>
       <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
     </div>
     <div class="ss-pillar-block" id="ss-block-green">
-      <img class="ss-header-icon" src="../assets/svg/green-icon.svg" alt="">
+      <img class="ss-header-icon" src="assets/svg/green-icon.svg" alt="">
       <span class="ss-header-title">Circularity &amp; Waste</span>
       <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
     </div>
     <div class="ss-pillar-block" id="ss-block-turquoise">
-      <img class="ss-header-icon" src="../assets/svg/torquois-icon.svg" alt="">
+      <img class="ss-header-icon" src="assets/svg/torquois-icon.svg" alt="">
       <span class="ss-header-title">Water</span>
       <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
     </div>
     <div class="ss-pillar-block" id="ss-block-orange">
-      <img class="ss-header-icon" src="../assets/svg/orange-icon.svg" alt="">
+      <img class="ss-header-icon" src="assets/svg/orange-icon.svg" alt="">
       <span class="ss-header-title">Habitat &amp; Species</span>
       <p class="ss-header-blurb">Welcome to dolor sit amet, consectetur adipiscelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
     </div>
@@ -194,10 +165,10 @@
 
   <!-- Screensaver pillar SVG overlays -->
   <div id="ss-overlays">
-    <img id="ss-svg-blue" src="../assets/svg/blue.svg" alt="">
-    <img id="ss-svg-green" src="../assets/svg/green.svg" alt="">
+    <img id="ss-svg-blue" src="assets/svg/blue.svg" alt="">
+    <img id="ss-svg-green" src="assets/svg/green.svg" alt="">
     <canvas id="ss-svg-turquoise"></canvas>
-    <img id="ss-svg-orange" src="../assets/svg/orange.svg" alt="">
+    <img id="ss-svg-orange" src="assets/svg/orange.svg" alt="">
   </div>
 
 
@@ -232,7 +203,6 @@
     <button class="nav-btn" data-state="screensaver">Screensaver</button>
     <button class="nav-btn" data-state="thankyou">Thank You</button>
     <button class="nav-btn" data-state="about">About</button>
-    <button class="nav-btn" data-state="pillar-menu">Menu</button>
     <span class="nav-label">PILLARS</span>
     <button class="nav-btn" data-state="pillar-1">1</button>
     <button class="nav-btn" data-state="pillar-2">2</button>

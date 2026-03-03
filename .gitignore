@@ -1,3 +1,9 @@
 node_modules/
 .claude/
 .DS_Store
+
+# Media files (large, per-machine)
+media/
+
+# Local data
+*/data/

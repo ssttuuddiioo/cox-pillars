@@ -1,0 +1,53 @@
+{
+  "id": "carbon",
+  "label": "Carbon & Climate",
+  "color": "#265EF9",
+  "icon": "assets/icon.svg",
+  "idle": {
+    "headline": "We believe trading<br>smog for sunshine is a<br>breath of fresh air.",
+    "cta": "Explore Cox Conserves<br>Carbon & Climate goals.",
+    "illustration": "assets/carbon-idle.svg"
+  },
+  "items": [
+    {
+      "tag": "CARBON & CLIMATE",
+      "title": "Creating renewable energy.",
+      "titleMaxWidth": "55%",
+      "menuShape": "assets/menu-shape.svg",
+      "body": "Cox has renewable energy projects across 41 locations that reduce 7,900 metric tons of carbon annually. This includes installing solar across seven Manheim Florida locations, which reduces electricity consumption by 6,900,000 kWh. The program includes two floating solar installations at Manheim Central Florida and Manheim Orlando, where we repurposed unusable retention ponds. By installing floating solar panels, we are now not only managing stormwater but also generating energy and reducing operations costs.",
+      "media": {
+        "type": "photo",
+        "src": "/media/photos/solar-panels.jpg"
+      },
+      "thumbnails": [
+        "/media/photos/solar-panels.jpg",
+        "/media/photos/solar-detail-1.jpg",
+        "/media/photos/solar-detail-2.jpg"
+      ]
+    },
+    {
+      "tag": "CARBON & CLIMATE",
+      "title": "It's not a flux capacitor, Marty. But it's close!",
+      "titleMaxWidth": "75%",
+      "menuShape": "assets/menu-shape.svg",
+      "body": "The flux capacitor was a fictional component in the Delorean, enabling Marty McFly to travel Back to the Future in the 1985 movie.\n\nCox is also headed into the future.\n\nWe're piloting an emerging technology from Cox Cleantech Accelerator company Flux Hybrids. The after-market plug-in transforms gas-powered vehicles into hybrids by adding an electric motor and batteries.\n\nMore than 1,300 Cox Fleet trucks could be converted, reducing carbon emissions by 50%.",
+      "media": {
+        "type": "video",
+        "src": "/media/videos/flux-hybrid.mp4"
+      },
+      "thumbnails": []
+    },
+    {
+      "tag": "CARBON & CLIMATE",
+      "title": "Local partnerships. Big impact.",
+      "titleMaxWidth": "65%",
+      "menuShape": "assets/menu-shape.svg",
+      "body": "Cox is a member of catalyst organizations focused on climate solutions, including the Southeast Energy Efficiency Alliance (SEEA) and Drawdown Georgia.\n\nSEEA promotes efficient energy as a catalyst for economic growth, workforce development and energy security across 12 southeastern states. Together, we're building a brighter economic future, more resilient cities and equitable energy efficiency solutions.\n\nDrawdown Georgia focuses on state-specific climate solutions that prioritize equity and public health, create jobs and nurture the natural environment.",
+      "media": {
+        "type": "photo",
+        "src": "/media/photos/seea-partnership.jpg"
+      },
+      "thumbnails": []
+    }
+  ]
+}
