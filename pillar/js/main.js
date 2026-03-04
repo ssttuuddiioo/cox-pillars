@@ -19,6 +19,7 @@
   var contentTitle, contentHero, contentThumbnails, contentBody;
   var navPrev, navHome, navNext;
   var activeVideo = null;
+  var imageCache = {};
 
   // ── Initialize ──
   function init() {
@@ -52,17 +53,44 @@
     navNext = document.getElementById('nav-next');
   }
 
-  // ── Preload all content images ──
+  // ── Preload all content media ──
+  function cacheImage(src) {
+    if (!imageCache[src]) {
+      var img = new Image();
+      img.src = src;
+      imageCache[src] = img;
+    }
+  }
+
   function preloadImages(items) {
     if (!items) return;
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
+      // Hero photos
       if (item.media && item.media.type === 'photo' && item.media.src) {
-        new Image().src = item.media.src;
+        cacheImage(item.media.src);
       }
+      // Hero videos — preload via hidden video element
+      if (item.media && item.media.type === 'video' && item.media.src) {
+        var v = document.createElement('video');
+        v.preload = 'auto';
+        v.src = item.media.src;
+        imageCache['video:' + item.media.src] = v;
+      }
+      // Thumbnails
       if (item.thumbnails) {
         for (var t = 0; t < item.thumbnails.length; t++) {
-          new Image().src = item.thumbnails[t];
+          cacheImage(item.thumbnails[t]);
+        }
+      }
+      // Overlay images (e.g. GIFs)
+      if (item.overlay) {
+        cacheImage(item.overlay);
+      }
+      // Partner logos
+      if (item.partnerLogos) {
+        for (var p = 0; p < item.partnerLogos.length; p++) {
+          cacheImage(item.partnerLogos[p]);
         }
       }
     }
