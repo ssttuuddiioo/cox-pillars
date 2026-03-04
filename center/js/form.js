@@ -99,8 +99,12 @@ var PledgeForm = (function() {
   }
 
   function validate() {
-    canSubmit = nameInput.value.trim().length > 0;
+    canSubmit = nameInput.value.trim().length > 0 && emailInput.value.trim().length > 0;
     if (submitBtn) submitBtn.disabled = !canSubmit;
+    // Clear error state once email has content
+    if (emailInput.value.trim().length > 0) {
+      emailInput.classList.remove('input-error');
+    }
   }
 
   function updateNameDisplay() {
@@ -110,6 +114,11 @@ var PledgeForm = (function() {
   }
 
   function handleSubmit() {
+    if (emailInput.value.trim().length === 0) {
+      emailInput.classList.add('input-error');
+      focusField('email');
+      return;
+    }
     if (!canSubmit) return;
     var data = {
       name: nameInput.value.trim(),
@@ -124,6 +133,7 @@ var PledgeForm = (function() {
     // Reset form
     nameInput.value = '';
     emailInput.value = '';
+    emailInput.classList.remove('input-error');
     canSubmit = false;
     activeField = 'name';
     if (nameDisplay) nameDisplay.textContent = '_____';

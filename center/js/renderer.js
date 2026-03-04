@@ -91,7 +91,7 @@ var Renderer = (function() {
     ctx.moveTo(s.x, s.y);
     ctx.quadraticCurveTo(cp.x, cp.y, e.x, e.y);
 
-    var alpha = mapRange(branch.depth, 0, maxDepth, 0.7, 0.2) * treeAlpha;
+    var alpha = mapRange(branch.depth, 0, maxDepth, 1.0, 0.5) * treeAlpha;
     ctx.strokeStyle = 'rgba(255, 255, 255, ' + alpha.toFixed(2) + ')';
     ctx.lineWidth = Math.max(branch.thickness * scale, 0.5);
     ctx.lineCap = 'round';
@@ -342,11 +342,16 @@ var Renderer = (function() {
     ['#1e5c1e', '#48af4c', '#80d248'],  // Greens — Circularity & Recycling
     ['#0d4f5a', '#1a9aaa', '#5ccedd'],  // Turquoise — Water
     ['#8b2f1a', '#e05a2b', '#f4a68a'],  // Oranges — Habitat & Species
-    ['#1a3366', '#2d6bc4', '#7ab5eb'],  // Tree phase (matches blue, not visible)
+    ['#1e5c1e', '#48af4c', '#80d248'],  // Tree phase (green, matches tree background)
   ];
-  var SS_HOLD = 5;   // seconds to hold each palette
-  var SS_FADE = 2;   // seconds to crossfade between palettes
-  var SS_CYCLE = SS_HOLD + SS_FADE;
+  // Timing must match animations.js screensaver cycle (120s total)
+  var SS_PILLAR_HOLD = 13;
+  var SS_PILLAR_FADE = 2;
+  var SS_PILLAR_CYCLE = SS_PILLAR_HOLD + SS_PILLAR_FADE; // 15s per pillar
+  var SS_TREE_HOLD = 58;
+  var SS_TREE_FADE = 2;
+  var SS_TREE_CYCLE = SS_TREE_HOLD + SS_TREE_FADE; // 60s for tree
+  var SS_TOTAL_LOOP = 4 * SS_PILLAR_CYCLE + SS_TREE_CYCLE; // 120s
 
   function getSSColor(colorIndex, time, treeDataRef) {
     var ssStart = (treeDataRef && treeDataRef.ssStartTime) || 0;
@@ -358,19 +363,28 @@ var Renderer = (function() {
       return SS_PALETTES[0][colorIndex];
     }
 
-    // Cycling phase
-    var totalCycleLen = SS_PALETTES.length * SS_CYCLE;
-    var pos = cycleTime % totalCycleLen;
-    var curIdx = Math.floor(pos / SS_CYCLE) % SS_PALETTES.length;
-    var withinSlot = pos - curIdx * SS_CYCLE;
+    // Cycling phase — matches animations.js pillar cycling exactly
+    var pos = cycleTime % SS_TOTAL_LOOP;
+    var curIdx, withinSlot, currentHold, currentFade;
+    if (pos < 4 * SS_PILLAR_CYCLE) {
+      curIdx = Math.floor(pos / SS_PILLAR_CYCLE);
+      withinSlot = pos - curIdx * SS_PILLAR_CYCLE;
+      currentHold = SS_PILLAR_HOLD;
+      currentFade = SS_PILLAR_FADE;
+    } else {
+      curIdx = 4;
+      withinSlot = pos - 4 * SS_PILLAR_CYCLE;
+      currentHold = SS_TREE_HOLD;
+      currentFade = SS_TREE_FADE;
+    }
 
-    if (withinSlot <= SS_HOLD) {
+    if (withinSlot <= currentHold) {
       // Holding on current palette
       return SS_PALETTES[curIdx][colorIndex];
     } else {
       // Crossfading to next palette
       var nxtIdx = (curIdx + 1) % SS_PALETTES.length;
-      var blend = easeInOutQuad((withinSlot - SS_HOLD) / SS_FADE);
+      var blend = easeInOutQuad((withinSlot - currentHold) / currentFade);
       return lerpColor(SS_PALETTES[curIdx][colorIndex], SS_PALETTES[nxtIdx][colorIndex], blend);
     }
   }
@@ -380,9 +394,7 @@ var Renderer = (function() {
     chartT = chartT || 0;
     ssT = ssT || 0;
     var easedChart = easeInOutQuad(chartT);
-    var rawEasedSS = easeInOutQuad(ssT);
-    var ssTreePhaseVal = (treeDataRef && treeDataRef.ssTreePhase) || 0;
-    var easedSS = rawEasedSS * (1 - easeInOutQuad(ssTreePhaseVal));
+    var easedSS = easeInOutQuad(ssT);
 
     // Use depth-sorted slots throughout the entire screensaver transition
     // to avoid draw-order pop at the old 0.5 threshold

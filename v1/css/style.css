@@ -119,6 +119,8 @@ body.about-open #cta-text {
   pointer-events: none;
 }
 
+body.form-open #ss-header,
+body.thank-you-active #ss-header,
 body.about-open #ss-about,
 body.about-open #ss-header,
 body.about-open #ss-overlays {
@@ -390,6 +392,10 @@ body.about-open #ss-overlays {
 .input-group input:focus,
 .input-group input.active {
   border-color: rgba(255, 255, 255, 0.4);
+}
+
+.input-group input.input-error {
+  border-color: #e74c3c;
 }
 
 /* ── Email Suffixes ── */
@@ -861,7 +867,7 @@ body.about-open #ss-overlays {
 /* ── Take the Pledge Button (3D layered pill) ── */
 #btn-pledge {
   position: absolute;
-  bottom: calc(12% + 85px);
+  bottom: calc(12% + 60px);
   left: 50%;
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
@@ -1038,7 +1044,7 @@ body.screensaver-active #ss-header {
 /* ── Pledge Count (tree view) ── */
 #ss-pledge-count {
   position: absolute;
-  bottom: calc(3% + 50px);
+  bottom: 3%;
   left: 50%;
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
@@ -1048,7 +1054,6 @@ body.screensaver-active #ss-header {
   transition: opacity var(--transition);
 }
 
-body.screensaver-active #ss-pledge-count,
 body.form-open #ss-pledge-count,
 body.about-open #ss-pledge-count {
   opacity: 0 !important;
@@ -1104,7 +1109,6 @@ body.screensaver-active #ss-overlays {
 #ss-overlays > canvas {
   position: absolute;
   opacity: 0;
-  transition: opacity 2s ease;
 }
 
 /* ── Screensaver ABOUT Link ── */
@@ -1175,7 +1179,6 @@ body.form-open #ss-about {
   -webkit-align-items: center;
   align-items: center;
   opacity: 0;
-  transition: opacity 2s ease;
 }
 
 .ss-header-icon {

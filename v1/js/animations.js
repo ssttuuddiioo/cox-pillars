@@ -46,30 +46,11 @@ var Animations = (function() {
     // Animate screensaver transition (slow wind-whisk in, moderate out)
     if (treeData) {
       if (treeData.screensaverTransition === undefined) treeData.screensaverTransition = 0;
-      var ssTarget = treeData.screensaverMode ? 1 : 0;
+      var ssTarget = (treeData.screensaverMode && treeData.ssShowRadial !== false) ? 1 : 0;
       if (treeData.screensaverTransition < ssTarget) {
         treeData.screensaverTransition = Math.min(ssTarget, treeData.screensaverTransition + 0.013);
       } else if (treeData.screensaverTransition > ssTarget) {
         treeData.screensaverTransition = Math.max(ssTarget, treeData.screensaverTransition - 0.024);
-      }
-    }
-
-    // Animate ssTreePhase (ramps up when pillar index = 4, down otherwise)
-    if (treeData && treeData.screensaverMode && treeData.ssStartTime) {
-      if (treeData.ssTreePhase === undefined) treeData.ssTreePhase = 0;
-      var tpElapsed = time - treeData.ssStartTime;
-      var tpCycleTime = tpElapsed - 5;
-      var ssTreeTarget = 0;
-      if (tpCycleTime > 0) {
-        var TP_CYCLE = 7; // 5s hold + 2s fade
-        var tpPos = tpCycleTime % (5 * TP_CYCLE);
-        var tpActiveIdx = Math.floor(tpPos / TP_CYCLE) % 5;
-        if (tpActiveIdx === 4) ssTreeTarget = 1;
-      }
-      if (treeData.ssTreePhase < ssTreeTarget) {
-        treeData.ssTreePhase = Math.min(ssTreeTarget, treeData.ssTreePhase + 0.015);
-      } else if (treeData.ssTreePhase > ssTreeTarget) {
-        treeData.ssTreePhase = Math.max(ssTreeTarget, treeData.ssTreePhase - 0.020);
       }
     }
 
@@ -89,10 +70,13 @@ var Animations = (function() {
         document.getElementById('ss-block-orange'),
         document.getElementById('ss-block-tree')
       ];
-      var SS_SVG_HOLD = 5;
-      var SS_SVG_FADE = 2;
-      var SS_SVG_CYCLE = SS_SVG_HOLD + SS_SVG_FADE;
-      var SS_PHASE_COUNT = 5;
+      var SS_PILLAR_HOLD = 13;
+      var SS_PILLAR_FADE = 2;
+      var SS_PILLAR_CYCLE = SS_PILLAR_HOLD + SS_PILLAR_FADE; // 15s per pillar
+      var SS_TREE_HOLD = 58;
+      var SS_TREE_FADE = 2;
+      var SS_TREE_CYCLE = SS_TREE_HOLD + SS_TREE_FADE; // 60s for tree
+      var SS_TOTAL_LOOP = 4 * SS_PILLAR_CYCLE + SS_TREE_CYCLE; // 120s
 
       // First 5 seconds: show blue
       var cycleTime = ssElapsed - 5;
@@ -100,56 +84,101 @@ var Animations = (function() {
       var fadeOut = false;
       var withinSlot = 0;
       if (cycleTime > 0) {
-        var totalLen = SS_PHASE_COUNT * SS_SVG_CYCLE;
-        var pos = cycleTime % totalLen;
-        activeIdx = Math.floor(pos / SS_SVG_CYCLE) % SS_PHASE_COUNT;
-        withinSlot = pos - activeIdx * SS_SVG_CYCLE;
-        fadeOut = withinSlot > SS_SVG_HOLD;
+        var pos = cycleTime % SS_TOTAL_LOOP;
+        if (pos < 4 * SS_PILLAR_CYCLE) {
+          activeIdx = Math.floor(pos / SS_PILLAR_CYCLE);
+          withinSlot = pos - activeIdx * SS_PILLAR_CYCLE;
+          fadeOut = withinSlot > SS_PILLAR_HOLD;
+        } else {
+          activeIdx = 4;
+          withinSlot = pos - 4 * SS_PILLAR_CYCLE;
+          fadeOut = withinSlot > SS_TREE_HOLD;
+        }
       }
+      // Toggle ssShowRadial during fade periods so leaf transition
+      // starts at the same time as the background crossfade (not after it)
+      if (activeIdx === 3 && fadeOut) {
+        treeData.ssShowRadial = false;  // Orange fading to tree: start leaves→tree now
+      } else if (activeIdx === 4 && fadeOut) {
+        treeData.ssShowRadial = true;   // Tree fading to blue: start leaves→radial now
+      } else {
+        treeData.ssShowRadial = (activeIdx !== 4);
+      }
+
+      var currentHold = (activeIdx === 4) ? SS_TREE_HOLD : SS_PILLAR_HOLD;
+      var currentFade = 2;
 
       // SVG overlays (only 4 — tree phase has none)
       for (var si = 0; si < ssSvgs.length; si++) {
         var svgOpacity = 0;
         if (activeIdx < 4 && si === activeIdx) {
           if (fadeOut) {
-            var nextIdx = (activeIdx + 1) % SS_PHASE_COUNT;
-            if (nextIdx === 4) {
-              // Fading into tree phase — smoothly fade out current SVG
-              svgOpacity = 1 - (withinSlot - SS_SVG_HOLD) / SS_SVG_FADE;
-            } else {
-              svgOpacity = 0;
-            }
+            // Gradual fade out for ALL pillar transitions
+            svgOpacity = 1 - (withinSlot - currentHold) / currentFade;
           } else {
             svgOpacity = 1;
           }
         } else if (activeIdx < 4 && fadeOut) {
-          var nextIdx = (activeIdx + 1) % SS_PHASE_COUNT;
-          if (nextIdx < 4 && si === nextIdx) svgOpacity = 1;
+          var nextIdx = (activeIdx + 1) % 5;
+          if (nextIdx < 4 && si === nextIdx) {
+            // Gradual fade in for ALL pillar transitions
+            svgOpacity = (withinSlot - currentHold) / currentFade;
+          }
         } else if (activeIdx === 4 && fadeOut && si === 0) {
           // Tree fading into Blue — fade blue SVG in
-          svgOpacity = (withinSlot - SS_SVG_HOLD) / SS_SVG_FADE;
+          svgOpacity = (withinSlot - currentHold) / currentFade;
         }
         if (ssSvgs[si]) ssSvgs[si].style.opacity = String(svgOpacity);
       }
 
-      // Header blocks (5 — includes tree block)
-      for (var si = 0; si < ssBlocks.length; si++) {
-        var blockOpacity = 0;
-        if (si === activeIdx) {
-          if (fadeOut) {
-            var nextIdx = (activeIdx + 1) % SS_PHASE_COUNT;
-            // Smoothly fade out into tree or from tree
-            blockOpacity = 1 - (withinSlot - SS_SVG_HOLD) / SS_SVG_FADE;
-          } else {
-            blockOpacity = 1;
-          }
-        } else if (fadeOut) {
-          var nextIdx = (activeIdx + 1) % SS_PHASE_COUNT;
-          if (si === nextIdx) {
-            blockOpacity = (withinSlot - SS_SVG_HOLD) / SS_SVG_FADE;
-          }
+      // Header blocks — cycle pillar icons during tree phase
+      var ICON_CYCLE = 3, ICON_FADE = 0.5, ICON_HOLD = ICON_CYCLE - ICON_FADE;
+      var blockOpacities = [0, 0, 0, 0, 0];
+      var iconOnly = [false, false, false, false, false];
+
+      if (activeIdx === 4 && !fadeOut) {
+        // Tree hold: cycle 4 pillar icons every 3s with crossfade
+        var iconIdx = Math.floor(withinSlot / ICON_CYCLE) % 4;
+        var iconWithin = withinSlot - Math.floor(withinSlot / ICON_CYCLE) * ICON_CYCLE;
+        var iconFading = iconWithin > ICON_HOLD;
+        blockOpacities[iconIdx] = iconFading ? 1 - (iconWithin - ICON_HOLD) / ICON_FADE : 1;
+        iconOnly[iconIdx] = true;
+        if (iconFading) {
+          var nextIcon = (iconIdx + 1) % 4;
+          blockOpacities[nextIcon] = (iconWithin - ICON_HOLD) / ICON_FADE;
+          iconOnly[nextIcon] = true;
         }
-        if (ssBlocks[si]) ssBlocks[si].style.opacity = String(blockOpacity);
+      } else if (activeIdx === 3 && fadeOut) {
+        // Orange→tree fade: orange (full) out, first icon (icon-only) in
+        var fp = (withinSlot - currentHold) / currentFade;
+        blockOpacities[3] = 1 - fp;
+        blockOpacities[0] = fp;
+        iconOnly[0] = true; // incoming icon is icon-only
+      } else if (activeIdx === 4 && fadeOut) {
+        // Tree→blue fade: last cycling icon out (icon-only), blue in (full)
+        var fp = (withinSlot - currentHold) / currentFade;
+        var lastIcon = Math.floor(SS_TREE_HOLD / ICON_CYCLE) % 4;
+        blockOpacities[lastIcon] = 1 - fp;
+        iconOnly[lastIcon] = true;
+        blockOpacities[0] = fp; // blue comes in full (iconOnly stays false)
+      } else {
+        // Normal pillar cycling (pillars 0-3)
+        blockOpacities[activeIdx] = 1;
+        if (fadeOut) {
+          blockOpacities[activeIdx] = 1 - (withinSlot - currentHold) / currentFade;
+          var nextIdx = (activeIdx + 1) % 5;
+          if (nextIdx < 5) blockOpacities[nextIdx] = (withinSlot - currentHold) / currentFade;
+        }
+      }
+
+      for (var si = 0; si < ssBlocks.length; si++) {
+        if (!ssBlocks[si]) continue;
+        ssBlocks[si].style.opacity = String(blockOpacities[si]);
+        var hideText = blockOpacities[si] > 0 && iconOnly[si];
+        var tEl = ssBlocks[si].querySelector('.ss-header-title');
+        var bEl = ssBlocks[si].querySelector('.ss-header-blurb');
+        if (tEl) tEl.style.display = hideText ? 'none' : '';
+        if (bEl) bEl.style.display = hideText ? 'none' : '';
       }
 
       // Hide ABOUT link during tree phase
@@ -157,6 +186,78 @@ var Animations = (function() {
       if (ssAboutEl) {
         ssAboutEl.style.opacity = (activeIdx === 4 && !fadeOut) ? '0' : '';
         ssAboutEl.style.pointerEvents = (activeIdx === 4 && !fadeOut) ? 'none' : '';
+      }
+
+      // Show pledge count only during tree phase (idx 4) + idle tree view
+      var ssPledgeEl = document.getElementById('ss-pledge-count');
+      if (ssPledgeEl) {
+        if (activeIdx === 4 && !fadeOut) {
+          ssPledgeEl.style.opacity = '1';
+        } else if (activeIdx === 4 && fadeOut) {
+          // Fade out as tree transitions to blue
+          var fadeOutVal = 1 - (withinSlot - currentHold) / currentFade;
+          ssPledgeEl.style.opacity = String(fadeOutVal);
+        } else if (activeIdx === 3 && fadeOut) {
+          // Fade in as we transition from orange to tree
+          var fadeIn = (withinSlot - currentHold) / currentFade;
+          ssPledgeEl.style.opacity = String(fadeIn);
+        } else {
+          ssPledgeEl.style.opacity = '0';
+        }
+      }
+
+      // Cycle 5 tooltips during tree phase (60s total, ~12s each)
+      if (activeIdx === 4 && !fadeOut && typeof Tooltip !== 'undefined' && treeData) {
+        var treeTimeInPhase = withinSlot;
+        var TT_COUNT = 5;
+        var TT_CYCLE = SS_TREE_HOLD / TT_COUNT; // ~11.6s each
+        var TT_HOLD = TT_CYCLE - 3; // visible time
+        var TT_FADE_IN = 1;
+        var TT_FADE_OUT = 1;
+        var ttIdx = Math.floor(treeTimeInPhase / TT_CYCLE);
+        var ttWithin = treeTimeInPhase - ttIdx * TT_CYCLE;
+
+        if (!treeData._ssTooltipSlots || treeData._ssTooltipCycle !== true) {
+          // Pick 5 random occupied leaf slots for tooltip cycling
+          var occupied = [];
+          for (var oi = 0; oi < treeData.leafSlots.length; oi++) {
+            if (treeData.leafSlots[oi].occupied && treeData.leafSlots[oi].leaf) {
+              occupied.push(treeData.leafSlots[oi]);
+            }
+          }
+          // Shuffle and pick up to 5
+          for (var sh = occupied.length - 1; sh > 0; sh--) {
+            var rj = Math.floor(Math.random() * (sh + 1));
+            var tmp = occupied[sh]; occupied[sh] = occupied[rj]; occupied[rj] = tmp;
+          }
+          treeData._ssTooltipSlots = occupied.slice(0, TT_COUNT);
+          treeData._ssTooltipCycle = true;
+          treeData._ssTooltipLastIdx = -1;
+        }
+
+        if (ttIdx < TT_COUNT && treeData._ssTooltipSlots.length > 0) {
+          var slotIdx = ttIdx % treeData._ssTooltipSlots.length;
+          var ttSlot = treeData._ssTooltipSlots[slotIdx];
+
+          if (ttWithin < TT_FADE_IN + TT_HOLD + TT_FADE_OUT) {
+            // Show this tooltip
+            if (treeData._ssTooltipLastIdx !== ttIdx) {
+              treeData._ssTooltipLastIdx = ttIdx;
+              var frame = document.getElementById('app-frame');
+              var frameRect = frame ? frame.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
+              var screenPos = Renderer.toScreen(ttSlot.x, ttSlot.y);
+              Tooltip.show(screenPos.x, screenPos.y, ttSlot.leaf, TT_HOLD * 1000 + TT_FADE_OUT * 1000);
+            }
+          }
+        }
+      } else if (activeIdx !== 4) {
+        // Reset tooltip cycle when leaving tree phase
+        if (treeData) {
+          treeData._ssTooltipCycle = false;
+          treeData._ssTooltipSlots = null;
+          treeData._ssTooltipLastIdx = -1;
+        }
+        Tooltip.hide();
       }
 
       // Cycle background color per pillar
@@ -170,7 +271,7 @@ var Animations = (function() {
       var bgR, bgG, bgB;
       if (fadeOut) {
         var nxtBg = (activeIdx + 1) % SS_BG.length;
-        var blend = (withinSlot - SS_SVG_HOLD) / SS_SVG_FADE;
+        var blend = (withinSlot - currentHold) / currentFade;
         bgR = Math.round(SS_BG[activeIdx][0] + (SS_BG[nxtBg][0] - SS_BG[activeIdx][0]) * blend);
         bgG = Math.round(SS_BG[activeIdx][1] + (SS_BG[nxtBg][1] - SS_BG[activeIdx][1]) * blend);
         bgB = Math.round(SS_BG[activeIdx][2] + (SS_BG[nxtBg][2] - SS_BG[activeIdx][2]) * blend);
@@ -188,7 +289,7 @@ var Animations = (function() {
         var btnColor = SS_BTN_COLORS[activeIdx];
         if (fadeOut) {
           var nxtBtn = (activeIdx + 1) % SS_BTN_COLORS.length;
-          var blend = (withinSlot - SS_SVG_HOLD) / SS_SVG_FADE;
+          var blend = (withinSlot - currentHold) / currentFade;
           btnColor = lerpColor(SS_BTN_COLORS[activeIdx], SS_BTN_COLORS[nxtBtn], blend);
         }
         btnPledge.style.background = btnColor;
@@ -200,24 +301,42 @@ var Animations = (function() {
           '0 0 0 14px ' + btnColor + '4D';
       }
     } else {
-      // Hide all overlays and pillar blocks when not in screensaver
+      // Hide all overlays when not in screensaver
       var ssSvgEls = document.querySelectorAll('#ss-overlays > img');
       for (var si = 0; si < ssSvgEls.length; si++) {
         ssSvgEls[si].style.opacity = '0';
       }
-      var ssBlockEls = document.querySelectorAll('#ss-header .ss-pillar-block');
-      for (var si = 0; si < ssBlockEls.length; si++) {
-        ssBlockEls[si].style.opacity = '0';
-      }
       // Restore default background
       document.body.style.background = '';
+      // Restore pledge count visibility for idle tree view
+      var ssPledgeEl = document.getElementById('ss-pledge-count');
+      if (ssPledgeEl) ssPledgeEl.style.opacity = '';
+
+      // Cycle pillar icons above tree (same as screensaver tree phase)
+      var ssHeaderEl = document.getElementById('ss-header');
+      if (ssHeaderEl) ssHeaderEl.style.opacity = '1';
+      var IDLE_CYCLE = 3, IDLE_FADE = 0.5, IDLE_HOLD = IDLE_CYCLE - IDLE_FADE;
+      var idleBlocks = document.querySelectorAll('#ss-header .ss-pillar-block');
+      var idleIdx = Math.floor(time / IDLE_CYCLE) % 4;
+      var idleWithin = time - Math.floor(time / IDLE_CYCLE) * IDLE_CYCLE;
+      var idleFading = idleWithin > IDLE_HOLD;
+      for (var si = 0; si < idleBlocks.length; si++) {
+        if (!idleBlocks[si]) continue;
+        var op = 0;
+        if (si === idleIdx) op = idleFading ? 1 - (idleWithin - IDLE_HOLD) / IDLE_FADE : 1;
+        if (idleFading && si === (idleIdx + 1) % 4) op = (idleWithin - IDLE_HOLD) / IDLE_FADE;
+        idleBlocks[si].style.opacity = String(op);
+        // Icon only — hide title and blurb
+        var tEl = idleBlocks[si].querySelector('.ss-header-title');
+        var bEl = idleBlocks[si].querySelector('.ss-header-blurb');
+        if (tEl) tEl.style.display = 'none';
+        if (bEl) bEl.style.display = 'none';
+      }
     }
 
     var chartT = treeData ? (treeData.chartTransition || 0) : 0;
     var ssT = treeData ? (treeData.screensaverTransition || 0) : 0;
-    var ssTreePhaseVal = treeData ? (treeData.ssTreePhase || 0) : 0;
-    var effectiveSS = ssT * (1 - ssTreePhaseVal);
-    var treeAlpha = 1 - Math.max(chartT, effectiveSS);
+    var treeAlpha = 1 - Math.max(chartT, ssT);
 
     Renderer.clear();
 

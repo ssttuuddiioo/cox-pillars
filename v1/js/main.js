@@ -399,21 +399,21 @@
         Tooltip.show(sp.x, sp.y, tooltipPledge, 6400);
       }
 
-      // Show thank-you overlays shortly after tooltip
+      // Show only the "Thank you for pledging" heading (bottom counter already visible via ss-pledge-count)
       thankYouTimer = setTimeout(function() {
+        // Hide cycling icons while thank-you heading is visible
+        document.body.classList.add('thank-you-active');
+
         thankYouTop.classList.remove('hidden');
         thankYouTop.style.opacity = '1';
-
-        thankYouBottom.classList.remove('hidden');
-        thankYouBottom.style.opacity = '1';
 
         // Hold for 8 seconds after appearing, then fade out
         thankYouTimer = setTimeout(function() {
           thankYouTop.style.opacity = '0';
-          thankYouBottom.style.opacity = '0';
           thankYouTimer = setTimeout(function() {
             thankYouTop.classList.add('hidden');
-            thankYouBottom.classList.add('hidden');
+            // Restore cycling icons
+            document.body.classList.remove('thank-you-active');
             thankYouTimer = null;
             btnPledge.style.opacity = '';
             btnPledge.style.pointerEvents = '';
@@ -774,7 +774,7 @@
 
     treeData.screensaverMode = true;
     treeData.ssStartTime = performance.now() / 1000;
-    treeData.ssTreePhase = 0;
+    treeData.ssShowRadial = true;
     computeScreensaverLayout();
     document.body.classList.add('screensaver-active');
 
