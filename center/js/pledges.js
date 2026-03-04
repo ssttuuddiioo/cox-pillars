@@ -47,7 +47,7 @@ var EntryStore = {
 
   load: function() {
     var self = this;
-    fetch('/api/entries')
+    fetch('api/entries')
       .then(function(r) { return r.json(); })
       .then(function(data) { self._count = data.count || 0; })
       .catch(function() { self._count = 0; });
@@ -55,7 +55,7 @@ var EntryStore = {
 
   add: function(name, email) {
     var self = this;
-    fetch('/api/entry', {
+    fetch('api/entry', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name, email: email || '' })

@@ -3,7 +3,7 @@ node_modules/
 .DS_Store
 
 # Media files (large, per-machine)
-media/
+# media/
 
 # Local data
 */data/

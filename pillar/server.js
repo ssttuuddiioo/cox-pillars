@@ -17,7 +17,8 @@ app.use('/media', express.static(MEDIA_PATH));
 
 // API: return the pillar config JSON
 app.get('/api/config', function(req, res) {
-  var jsonPath = path.join(__dirname, 'content', PILLAR + '.json');
+  var pillar = req.query.p || PILLAR;
+  var jsonPath = path.join(__dirname, 'content', pillar + '.json');
   if (!fs.existsSync(jsonPath)) {
     return res.status(404).json({ error: 'Pillar config not found: ' + PILLAR });
   }

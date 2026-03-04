@@ -14,7 +14,7 @@
       "body": "Content to be provided.",
       "media": {
         "type": "photo",
-        "src": "/media/photos/habitat-1.jpg"
+        "src": "media/photos/habitat-1.jpg"
       },
       "thumbnails": []
     },
@@ -24,7 +24,7 @@
       "body": "Content to be provided.",
       "media": {
         "type": "photo",
-        "src": "/media/photos/habitat-2.jpg"
+        "src": "media/photos/habitat-2.jpg"
       },
       "thumbnails": []
     },
@@ -34,7 +34,7 @@
       "body": "Content to be provided.",
       "media": {
         "type": "photo",
-        "src": "/media/photos/habitat-3.jpg"
+        "src": "media/photos/habitat-3.jpg"
       },
       "thumbnails": []
     }

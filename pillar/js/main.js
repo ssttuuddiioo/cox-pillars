@@ -27,6 +27,7 @@
     ContentLoader.load(function(cfg) {
       config = cfg;
       applyTheme(config.color);
+      preloadImages(config.items);
       renderIdle();
       renderMenu();
       transitionTo(STATE.IDLE);
@@ -49,6 +50,22 @@
     navPrev = document.getElementById('nav-prev');
     navHome = document.getElementById('nav-home');
     navNext = document.getElementById('nav-next');
+  }
+
+  // ── Preload all content images ──
+  function preloadImages(items) {
+    if (!items) return;
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      if (item.media && item.media.type === 'photo' && item.media.src) {
+        new Image().src = item.media.src;
+      }
+      if (item.thumbnails) {
+        for (var t = 0; t < item.thumbnails.length; t++) {
+          new Image().src = item.thumbnails[t];
+        }
+      }
+    }
   }
 
   // ── Theme ──
@@ -173,24 +190,14 @@
 
     // Hero media
     contentHero.innerHTML = '';
-    contentHero.style.position = 'relative';
+    activeVideo = null;
 
-    if (item.media) {
+    if (item.heroLayout === 'phone') {
+      // Phone mockup layout with partner logos
+      renderPhoneHero(item);
+    } else if (item.media) {
       if (item.media.type === 'video') {
-        var video = document.createElement('video');
-        video.src = item.media.src;
-        video.setAttribute('playsinline', '');
-        video.setAttribute('preload', 'metadata');
-        if (item.thumbnails && item.thumbnails.length > 0) {
-          video.setAttribute('poster', item.thumbnails[0]);
-        }
-        video.addEventListener('click', function() {
-          if (video.paused) {
-            video.play();
-          } else {
-            video.pause();
-          }
-        });
+        var video = createVideoElement(item);
         contentHero.appendChild(video);
         activeVideo = video;
       } else {
@@ -198,14 +205,23 @@
         img.src = item.media.src;
         img.alt = item.title;
         contentHero.appendChild(img);
-        activeVideo = null;
       }
+    }
+
+    // Optional overlay image (e.g. tilted GIF)
+    if (item.overlay) {
+      var overlayImg = document.createElement('img');
+      overlayImg.src = item.overlay;
+      overlayImg.alt = '';
+      overlayImg.className = 'hero-overlay';
+      contentHero.appendChild(overlayImg);
     }
 
     // Thumbnail gallery
     contentThumbnails.innerHTML = '';
     if (item.thumbnails && item.thumbnails.length > 1) {
-      for (var t = 0; t < item.thumbnails.length; t++) {
+      var thumbLimit = Math.min(item.thumbnails.length, 2);
+      for (var t = 0; t < thumbLimit; t++) {
         var thumbBtn = document.createElement('button');
         thumbBtn.className = 'thumb-btn';
         if (t === 0) thumbBtn.classList.add('active');
@@ -239,6 +255,106 @@
       allThumbs[i].classList.remove('active');
     }
     btn.classList.add('active');
+  }
+
+  function createVideoElement(item) {
+    var video = document.createElement('video');
+    video.src = item.media.src;
+    video.setAttribute('playsinline', '');
+    video.setAttribute('autoplay', '');
+    video.setAttribute('loop', '');
+    video.muted = true;
+    video.setAttribute('preload', 'auto');
+    if (item.thumbnails && item.thumbnails.length > 0) {
+      video.setAttribute('poster', item.thumbnails[0]);
+    }
+    video.addEventListener('click', function() {
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
+    });
+    return video;
+  }
+
+  function renderPhoneHero(item) {
+    var layout = document.createElement('div');
+    layout.className = 'hero-phone-layout';
+
+    // Phone mockup with video inside
+    var phone = document.createElement('div');
+    phone.className = 'phone-mockup';
+
+    if (item.media) {
+      if (item.media.type === 'video') {
+        var video = document.createElement('video');
+        video.src = item.media.src;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('preload', 'auto');
+        if (item.thumbnails && item.thumbnails.length > 0) {
+          video.setAttribute('poster', item.thumbnails[0]);
+        }
+        phone.appendChild(video);
+        activeVideo = video;
+
+        // Play button overlay
+        var playBtn = document.createElement('button');
+        playBtn.className = 'phone-play-btn';
+        playBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>';
+        phone.appendChild(playBtn);
+
+        // Pause button (hidden until playing)
+        var pauseBtn = document.createElement('button');
+        pauseBtn.className = 'phone-pause-btn';
+        pauseBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+        phone.appendChild(pauseBtn);
+
+        playBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          video.muted = false;
+          video.removeAttribute('muted');
+          video.volume = 0.5;
+          video.play();
+          playBtn.style.display = 'none';
+          pauseBtn.style.display = 'flex';
+        });
+
+        pauseBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          video.pause();
+          pauseBtn.style.display = 'none';
+          playBtn.style.display = 'flex';
+        });
+
+        video.addEventListener('ended', function() {
+          pauseBtn.style.display = 'none';
+          playBtn.style.display = 'flex';
+        });
+      } else {
+        var img = document.createElement('img');
+        img.src = item.media.src;
+        img.alt = item.title;
+        phone.appendChild(img);
+      }
+    }
+
+    layout.appendChild(phone);
+
+    // Partner logos column
+    if (item.partnerLogos && item.partnerLogos.length > 0) {
+      var logos = document.createElement('div');
+      logos.className = 'partner-logos';
+      for (var i = 0; i < item.partnerLogos.length; i++) {
+        var logoImg = document.createElement('img');
+        logoImg.src = item.partnerLogos[i];
+        logoImg.alt = '';
+        logos.appendChild(logoImg);
+      }
+      layout.appendChild(logos);
+    }
+
+    contentHero.appendChild(layout);
   }
 
   function stopVideo() {

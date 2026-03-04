@@ -16,6 +16,10 @@
   --radius-sm: 10px;
   --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   --nav-height: 80px;
+  --bg-content: #bebebe;
+  --card-bg: #faf5e9;
+  --card-radius: 39px;
+  --text-body-dark: #1a1a1a;
 }
 
 /* ── Reset ── */
@@ -78,12 +82,6 @@ html, body {
 .menu-logo-img {
   height: 52px;
   width: auto;
-}
-
-.content-logo-img {
-  height: 20px;
-  width: auto;
-  filter: brightness(0) invert(1);
 }
 
 
@@ -228,7 +226,7 @@ html, body {
 .menu-card-content {
   display: flex;
   flex-direction: column;
-  padding: 50px 52px 34px;
+  padding: 50px 52px 54px;
   height: 100%;
 }
 
@@ -260,7 +258,7 @@ html, body {
   font-size: clamp(20px, 5vw, 34px);
   line-height: 1.2;
   color: #ffffff;
-  padding-left: 20px;
+  padding-left: 60px;
 }
 
 .menu-card-arrow {
@@ -277,7 +275,20 @@ html, body {
    ════════════════════════════════════════ */
 
 #screen-content {
-  background: var(--bg);
+  background: var(--bg-content);
+}
+
+.content-logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 6% 100px;
+}
+
+.content-logo-img {
+  height: 36px;
+  width: auto;
 }
 
 .content-scroll {
@@ -285,32 +296,136 @@ html, body {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(var(--nav-height) + 20px);
+  padding-bottom: 20px;
 }
 
-.content-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 32px 6% 24px;
+/* Card container */
+.content-card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  margin: 0 20px;
+  overflow: hidden;
 }
 
 /* Hero media */
 .content-hero {
+  position: relative;
   width: 100%;
-  padding: 0 6%;
-  margin-bottom: 16px;
+  margin-bottom: 0;
+}
+
+.content-hero .hero-overlay {
+  position: absolute;
+  bottom: -20px;
+  right: 25px;
+  width: 20%;
+  max-height: none;
+  border-radius: 20px;
+  transform: rotate(18deg);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Phone mockup hero layout */
+.hero-phone-layout {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 20px;
+}
+
+.phone-mockup {
+  position: relative;
+  width: 40%;
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 28px;
+  padding: 6px;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.08),
+    0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.phone-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.phone-play-btn svg {
+  width: 24px;
+  height: 24px;
+  margin-left: 3px;
+}
+
+.phone-pause-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.phone-pause-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.content-hero .phone-mockup video,
+.content-hero .phone-mockup img {
+  width: 100%;
+  max-height: none;
+  border-radius: 22px;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 9 / 19;
+  background: #000;
+}
+
+.content-hero .partner-logos {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+  align-items: center;
+}
+
+.content-hero .partner-logos img {
+  width: 80%;
+  max-height: none;
+  height: auto;
+  object-fit: contain;
+  border-radius: 0;
+  background: none;
 }
 
 .content-hero img,
 .content-hero video {
   width: 100%;
-  border-radius: var(--radius);
+  border-radius: 0;
   display: block;
   object-fit: cover;
-  max-height: 45vh;
-  background: rgba(255, 255, 255, 0.05);
+  max-height: 38vh;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .content-hero video {
@@ -341,14 +456,16 @@ html, body {
   margin-left: 3px;
 }
 
-/* Thumbnail gallery */
+/* Thumbnail gallery — 2-column grid, overlaps hero */
 .content-thumbnails {
-  display: flex;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 2fr 3fr;
   gap: 8px;
-  padding: 0 6%;
-  margin-bottom: 20px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  padding: 0 8px;
+  margin-top: -120px;
+  margin-bottom: 8px;
 }
 
 .content-thumbnails:empty {
@@ -356,9 +473,8 @@ html, body {
 }
 
 .thumb-btn {
-  flex-shrink: 0;
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  height: auto;
   border: 2px solid transparent;
   border-radius: var(--radius-sm);
   overflow: hidden;
@@ -374,7 +490,7 @@ html, body {
 }
 
 .thumb-btn:active {
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 .thumb-btn img {
@@ -388,66 +504,63 @@ html, body {
 .content-title {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(14px, 5vw, 16px);
+  font-size: clamp(25px, 3vw, 18px);
   line-height: 1.25;
-  color: var(--text-primary);
-  padding: 0 6%;
-  margin-bottom: 16px;
+  color: var(--pillar-color);
+  padding: 45px 48px 16px;
 }
 
 .content-body {
   font-family: var(--font);
-  font-size: clamp(13px, 2.5vw, 15px);
+  font-size: clamp(12px, 1.75vw, 12px);
   font-weight: 400;
   line-height: 1.75;
-  color: var(--text-secondary);
-  padding: 0 6%;
+  color: var(--text-body-dark);
+  padding: 0 48px 32px;
 }
 
 .content-body p {
   margin-bottom: 1.2em;
 }
 
-/* ── Bottom Navigation Bar ── */
+/* ── Bottom Navigation Bar (inside card) ── */
 .content-nav {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: var(--nav-height);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 48px;
-  background: linear-gradient(to top, var(--bg) 60%, transparent);
-  padding-bottom: 12px;
-  z-index: 10;
+  justify-content: space-between;
+  padding: 16px 8% 24px;
 }
 
 .nav-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
   border: none;
-  border-radius: 50%;
   background: none;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
-  color: var(--text-primary);
-  transition: background 0.15s ease;
+  padding: 8px;
+  transition: opacity 0.15s ease;
 }
 
 .nav-btn:active {
-  background: rgba(255, 255, 255, 0.1);
+  opacity: 0.6;
 }
 
-.nav-icon {
-  width: 24px;
-  height: 24px;
+.nav-btn img {
+  width: 40px;
+  height: auto;
+  object-fit: contain;
+}
+
+.nav-prev img {
+  transform: scaleX(-1);
+}
+
+.nav-home img {
+  transform: rotate(90deg);
 }
 
 

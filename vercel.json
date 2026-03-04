@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/pillar/shared/:path*", "destination": "/shared/:path*" },
+    { "source": "/center/shared/:path*", "destination": "/shared/:path*" },
+    { "source": "/pillar/:path*", "destination": "/pillar/:path*" },
+    { "source": "/center/:path*", "destination": "/center/:path*" }
+  ],
+  "redirects": [
+    { "source": "/", "destination": "/pillar/?p=carbon" }
+  ]
+}

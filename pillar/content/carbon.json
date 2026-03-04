@@ -14,15 +14,15 @@
       "title": "Creating renewable energy.",
       "titleMaxWidth": "55%",
       "menuShape": "assets/menu-shape.svg",
-      "body": "Cox has renewable energy projects across 41 locations that reduce 7,900 metric tons of carbon annually. This includes installing solar across seven Manheim Florida locations, which reduces electricity consumption by 6,900,000 kWh. The program includes two floating solar installations at Manheim Central Florida and Manheim Orlando, where we repurposed unusable retention ponds. By installing floating solar panels, we are now not only managing stormwater but also generating energy and reducing operations costs.",
+      "body": "Cox has renewable energy projects across 41 locations that reduce 7,900 metric tons of carbon annually.\n\nThis includes installing solar across seven Manheim Florida locations, which reduces electricity consumption by 6,900,000 kWh. The program includes two floating solar installations at Manheim Central Florida and Manheim Orlando, where we repurposed unusable retention ponds. By installing floating solar panels, we are now not only managing stormwater but also generating energy and reducing operations costs.",
       "media": {
         "type": "photo",
-        "src": "/media/photos/solar-panels.jpg"
+        "src": "media/photos/carbon-1.jpg"
       },
       "thumbnails": [
-        "/media/photos/solar-panels.jpg",
-        "/media/photos/solar-detail-1.jpg",
-        "/media/photos/solar-detail-2.jpg"
+        "media/photos/carbon-1.jpg",
+        "media/photos/carbon-detail-1.jpg",
+        "media/photos/carbon-detail-2.jpg"
       ]
     },
     {
@@ -33,8 +33,9 @@
       "body": "The flux capacitor was a fictional component in the Delorean, enabling Marty McFly to travel Back to the Future in the 1985 movie.\n\nCox is also headed into the future.\n\nWe're piloting an emerging technology from Cox Cleantech Accelerator company Flux Hybrids. The after-market plug-in transforms gas-powered vehicles into hybrids by adding an electric motor and batteries.\n\nMore than 1,300 Cox Fleet trucks could be converted, reducing carbon emissions by 50%.",
       "media": {
         "type": "video",
-        "src": "/media/videos/flux-hybrid.mp4"
+        "src": "media/videos/flux-hybrid.mp4"
       },
+      "overlay": "media/photos/flux-hybrid-overlay.gif",
       "thumbnails": []
     },
     {
@@ -43,10 +44,15 @@
       "titleMaxWidth": "65%",
       "menuShape": "assets/menu-shape.svg",
       "body": "Cox is a member of catalyst organizations focused on climate solutions, including the Southeast Energy Efficiency Alliance (SEEA) and Drawdown Georgia.\n\nSEEA promotes efficient energy as a catalyst for economic growth, workforce development and energy security across 12 southeastern states. Together, we're building a brighter economic future, more resilient cities and equitable energy efficiency solutions.\n\nDrawdown Georgia focuses on state-specific climate solutions that prioritize equity and public health, create jobs and nurture the natural environment.",
+      "heroLayout": "phone",
       "media": {
-        "type": "photo",
-        "src": "/media/photos/seea-partnership.jpg"
+        "type": "video",
+        "src": "media/videos/seea-partnership.mp4"
       },
+      "partnerLogos": [
+        "assets/logo-seea.png",
+        "assets/logo-drawdown.png"
+      ],
       "thumbnails": []
     }
   ]

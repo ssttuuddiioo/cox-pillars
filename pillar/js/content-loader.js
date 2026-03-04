@@ -6,7 +6,10 @@ var ContentLoader = (function() {
 
   function load(callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/api/config', true);
+    // Determine pillar from ?p= param, default to carbon
+    var params = new URLSearchParams(window.location.search);
+    var pillar = params.get('p') || 'carbon';
+    xhr.open('GET', 'content/' + pillar + '.json', true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
