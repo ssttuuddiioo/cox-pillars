@@ -10,6 +10,9 @@
 <body>
 <div id="app-frame">
 
+  <!-- Radial leaf burst: blurred 2x background (visible on menu/content) -->
+  <canvas id="radial-bg" class="radial-canvas radial-bg"></canvas>
+
   <!-- ===== SCREEN 1: IDLE / HOME ===== -->
   <div id="screen-idle" class="screen active">
     <!-- Top: Headline + Logo -->
@@ -20,9 +23,9 @@
       </div>
     </div>
 
-    <!-- Middle: Pillar illustration -->
+    <!-- Middle: Radial leaf burst animation -->
     <div class="idle-illustration" id="idle-illustration">
-      <!-- Loaded dynamically from JSON -->
+      <canvas id="radial-fg" class="radial-canvas radial-fg"></canvas>
     </div>
 
     <!-- Bottom: CTA bar -->
@@ -80,6 +83,7 @@
 </div><!-- /app-frame -->
 
 <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<script src="js/radial.js" defer></script>
 <script src="js/content-loader.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>

@@ -14,7 +14,7 @@
 
   // ── DOM References ──
   var screenIdle, screenMenu, screenContent;
-  var idleHeadline, idleCtaText, idleIllustration;
+  var idleHeadline, idleCtaText;
   var menuItems;
   var contentTitle, contentHero, contentThumbnails, contentBody;
   var navPrev, navHome, navNext;
@@ -30,6 +30,7 @@
       preloadImages(config.items);
       renderIdle();
       renderMenu();
+      initRadialAnimation();
       transitionTo(STATE.IDLE);
       resetIdleTimer();
     });
@@ -41,7 +42,6 @@
     screenContent = document.getElementById('screen-content');
     idleHeadline = document.getElementById('idle-headline');
     idleCtaText = document.getElementById('idle-cta-text');
-    idleIllustration = document.getElementById('idle-illustration');
     menuItems = document.getElementById('menu-items');
     contentTitle = document.getElementById('content-title');
     contentHero = document.getElementById('content-hero');
@@ -88,6 +88,11 @@
     toggleScreen(screenMenu, state === STATE.MENU);
     toggleScreen(screenContent, state === STATE.CONTENT);
 
+    // Toggle blurred background for menu/content screens
+    if (typeof RadialLeaf !== 'undefined') {
+      RadialLeaf.showBackground(state !== STATE.IDLE);
+    }
+
     if (state === STATE.CONTENT && itemIndex !== undefined) {
       currentItemIndex = itemIndex;
       renderContent(currentItemIndex);
@@ -110,18 +115,20 @@
     }
   }
 
+  // ── Radial Animation ──
+  function initRadialAnimation() {
+    var bgCanvas = document.getElementById('radial-bg');
+    var fgCanvas = document.getElementById('radial-fg');
+    if (!bgCanvas || !fgCanvas || typeof RadialLeaf === 'undefined') return;
+    RadialLeaf.init(bgCanvas, fgCanvas, config.id);
+  }
+
   // ── Idle Screen ──
   function renderIdle() {
     if (!config || !config.idle) return;
     idleHeadline.innerHTML = config.idle.headline;
     idleCtaText.innerHTML = config.idle.cta;
-    if (config.idle.illustration) {
-      var img = document.createElement('img');
-      img.src = config.idle.illustration;
-      img.alt = '';
-      idleIllustration.innerHTML = '';
-      idleIllustration.appendChild(img);
-    }
+    // Canvas animation handles the illustration — no static image needed
   }
 
   // ── Menu Screen ──
