@@ -220,7 +220,7 @@
     var item = ContentLoader.getItem(index);
     if (!item) return;
 
-    contentTitle.textContent = item.title;
+    contentTitle.innerHTML = item.title;
     contentBody.innerHTML = formatBody(item.body);
 
     // Hero media
@@ -243,13 +243,17 @@
       }
     }
 
-    // Optional overlay image (e.g. tilted GIF)
+    // Optional overlay image (e.g. tilted GIF) — appended to card (not hero)
+    // so it isn't clipped by the hero's overflow:hidden
+    var card = document.querySelector('.content-card');
+    var oldOverlay = card.querySelector('.hero-overlay');
+    if (oldOverlay) oldOverlay.remove();
     if (item.overlay) {
       var overlayImg = document.createElement('img');
       overlayImg.src = item.overlay;
       overlayImg.alt = '';
       overlayImg.className = 'hero-overlay';
-      contentHero.appendChild(overlayImg);
+      card.appendChild(overlayImg);
     }
 
     // Thumbnail gallery
